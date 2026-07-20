@@ -163,3 +163,14 @@ export type FontFamilies = typeof fontFamilies;
 export type FontSizes = typeof fontSizes;
 export type FontWeights = typeof fontWeights;
 export type TypographyPresets = typeof typographyPresets;
+
+// Export a combined typography object for easy access
+export const typography = {
+  families: fontFamilies,
+  sizes: fontSizes,
+  weights: fontWeights,
+  lineHeights,
+  letterSpacing,
+  textTransform,
+  presets: typographyPresets,
+} as const;

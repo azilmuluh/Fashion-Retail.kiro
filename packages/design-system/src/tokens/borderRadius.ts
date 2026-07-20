@@ -1,25 +1,27 @@
 /**
  * Fashion Retail Platform - Design Tokens: Border Radius
- * Neo-Brutalist aesthetic with rounded corners
+ * HopeRise-inspired: Soft, rounded, pill-shaped components
  */
 
 export const borderRadius = {
   none: 0,
-  sm: 4,
-  base: 8,
-  md: 12,
-  lg: 16,
-  xl: 24,
-  full: 9999, // For circular elements
+  sm: 8,
+  base: 12,
+  md: 16,
+  lg: 24,
+  xl: 32,
+  pill: 50,      // Pill-shaped buttons
+  full: 9999,    // For circular elements
 } as const;
 
 export type BorderRadius = typeof borderRadius;
 
-// Common border radius patterns
+// Common border radius patterns - HopeRise style
 export const borderRadiusPresets = {
-  card: borderRadius.lg,
-  button: borderRadius.base,
-  input: borderRadius.base,
-  badge: borderRadius.full,
-  image: borderRadius.md,
+  card: borderRadius.lg,        // Rounded cards
+  button: borderRadius.pill,     // Pill-shaped buttons
+  input: borderRadius.md,        // Rounded inputs
+  badge: borderRadius.full,      // Circular badges
+  image: borderRadius.xl,        // Soft oval/capsule frames
+  container: borderRadius.lg,    // Container elements
 } as const;

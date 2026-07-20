@@ -1,70 +1,87 @@
 /**
  * Fashion Retail Platform - Design Tokens: Colors
- * Neo-Brutalist, Retro-Futuristic Aesthetic
+ * HopeRise-inspired: Warm, empathetic, modern aesthetic
  * 
- * Color Distribution (60/30/10 Rule):
- * - 60% Ivory (backgrounds, large areas)
- * - 30% Black (text, borders, structural elements)
- * - 10% Safety Orange (accents, CTAs, highlights)
+ * Color Distribution:
+ * - Primary: Soft cream and beige backgrounds
+ * - Accent: Vibrant leaf-green for CTAs
+ * - Text: Dark charcoal for readability
  */
 
 export const colors = {
-  // Primary Palette (60/30/10)
-  ivory: '#F5EFE0',        // 60% - Main background
-  black: '#000000',        // 30% - Text, borders
-  safetyOrange: '#FF6B35', // 10% - Accents, CTAs
+  // Primary colors - HopeRise palette
+  primary: {
+    green: '#2ECC71',      // Vibrant leaf-green for CTAs
+    greenHover: '#27AE60', // Darker green for hover
+    greenLight: '#E8F8F0', // Light green for backgrounds
+    cream: '#F8F5EE',      // Soft cream background
+    beige: '#EAE3D2',      // Warm beige
+    white: '#FFFFFF',      // Crisp white
+    charcoal: '#1C1C1C',   // Dark charcoal text
+    grayText: '#4A4A4A',   // Secondary text
+    grayLight: '#E5E5E5',  // Light gray for borders
+  },
   
-  // Gradient Colors (for orange accent)
-  gradientYellow: '#FFB627',
-  gradientRed: '#FF4500',
+  // Neutral colors (for compatibility)
+  neutral: {
+    ivory: '#F8F5EE',      // Soft cream
+    white: '#FFFFFF',      // Crisp white
+    gray: '#4A4A4A',       // Gray text
+    lightGray: '#E5E5E5',  // Light gray
+    cream: '#F8F5EE',
+    beige: '#EAE3D2',
+  },
   
   // Semantic Colors
   background: {
-    primary: '#F5EFE0',    // Ivory
+    primary: '#F8F5EE',    // Soft cream
     secondary: '#FFFFFF',  // Pure white for cards
-    dark: '#161616',       // Dark code blocks
-    overlay: 'rgba(0, 0, 0, 0.5)',
+    accent: '#EAE3D2',     // Warm beige
+    dark: '#1C1C1C',       // Dark charcoal
+    overlay: 'rgba(28, 28, 28, 0.5)',
   },
   
   text: {
-    primary: '#000000',    // Black
-    secondary: '#333333',  // Slightly lighter for secondary text
-    inverse: '#F5EFE0',    // Ivory on dark backgrounds
-    muted: '#666666',      // Muted text
+    primary: '#1C1C1C',    // Dark charcoal
+    secondary: '#4A4A4A',  // Gray text
+    inverse: '#FFFFFF',    // White on dark backgrounds
+    muted: '#9E9E9E',      // Muted text
   },
   
   border: {
-    primary: '#000000',    // Neo-Brutalist black borders
-    secondary: '#CCCCCC',  // Lighter borders for subtle dividers
+    primary: '#E5E5E5',    // Light gray borders
+    secondary: '#EAE3D2',  // Beige borders
   },
   
   accent: {
-    primary: '#FF6B35',    // Safety orange
-    hover: '#FF8556',      // Lighter orange for hover states
-    active: '#E55A28',     // Darker orange for active states
+    primary: '#2ECC71',    // Leaf green
+    hover: '#27AE60',      // Darker green for hover
+    active: '#229954',     // Even darker for active
+    light: '#E8F8F0',      // Light green background
   },
   
-  // Status Colors (with Neo-Brutalist treatment)
+  // Status Colors
   status: {
-    success: '#00C853',
-    warning: '#FF6B35',    // Using accent orange
-    error: '#FF1744',
-    info: '#2196F3',
+    success: '#2ECC71',
+    warning: '#F39C12',
+    error: '#E74C3C',
+    info: '#3498DB',
   },
   
-  // Utility Colors
+  // Legacy compatibility
   white: '#FFFFFF',
+  black: '#1C1C1C',
   gray: {
     50: '#FAFAFA',
     100: '#F5F5F5',
     200: '#EEEEEE',
-    300: '#E0E0E0',
+    300: '#E5E5E5',
     400: '#BDBDBD',
     500: '#9E9E9E',
     600: '#757575',
     700: '#616161',
     800: '#424242',
-    900: '#212121',
+    900: '#1C1C1C',
   },
 } as const;
 
@@ -72,8 +89,8 @@ export type Colors = typeof colors;
 
 // Gradient Definitions
 export const gradients = {
-  orangeAccent: `linear-gradient(135deg, ${colors.gradientYellow} 0%, ${colors.safetyOrange} 50%, ${colors.gradientRed} 100%)`,
-  darkOverlay: `linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.8) 100%)`,
+  greenAccent: `linear-gradient(135deg, #2ECC71 0%, #27AE60 100%)`,
+  creamOverlay: `linear-gradient(180deg, rgba(248, 245, 238, 0) 0%, rgba(248, 245, 238, 0.9) 100%)`,
 } as const;
 
 export type Gradients = typeof gradients;

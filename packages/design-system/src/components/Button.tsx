@@ -1,11 +1,11 @@
 /**
  * Button Component
- * Neo-Brutalist styling with black borders and optional orange gradient
+ * HopeRise-inspired: Pill-shaped, soft, empathetic design
  */
 
 import React from 'react';
-import { TouchableOpacity, Text, StyleSheet, ViewStyle, TextStyle, ActivityIndicator } from 'react-native';
-import { colors, gradients, borderRadius, spacing, typographyPresets } from '../tokens';
+import { TouchableOpacity, Text, StyleSheet, ViewStyle, TextStyle, ActivityIndicator, Platform } from 'react-native';
+import { colors, borderRadius, spacing, typographyPresets } from '../tokens';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost';
 export type ButtonSize = 'small' | 'medium' | 'large';
@@ -35,44 +35,53 @@ export const Button: React.FC<ButtonProps> = ({
 }) => {
   const getButtonStyle = (): ViewStyle => {
     const base: ViewStyle = {
-      borderRadius: borderRadius.base,
-      borderWidth: 2,
-      borderColor: colors.black,
+      borderRadius: borderRadius.pill,
+      borderWidth: 0,
       alignItems: 'center',
       justifyContent: 'center',
       flexDirection: 'row',
+      cursor: Platform.OS === 'web' ? 'pointer' : undefined,
+      transition: Platform.OS === 'web' ? 'all 0.3s ease' : undefined,
+      shadowColor: 'rgba(0, 0, 0, 0.1)',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 1,
+      shadowRadius: 8,
+      elevation: 2,
     };
 
     // Size variations
     const sizeStyles: Record<ButtonSize, ViewStyle> = {
       small: {
-        paddingVertical: spacing[2],
-        paddingHorizontal: spacing[4],
+        paddingVertical: spacing.xs,
+        paddingHorizontal: spacing.lg,
       },
       medium: {
-        paddingVertical: spacing[3],
-        paddingHorizontal: spacing[6],
+        paddingVertical: spacing.sm,
+        paddingHorizontal: spacing.xl,
       },
       large: {
-        paddingVertical: spacing[4],
-        paddingHorizontal: spacing[8],
+        paddingVertical: spacing.md,
+        paddingHorizontal: spacing['2xl'],
       },
     };
 
     // Variant styles
     const variantStyles: Record<ButtonVariant, ViewStyle> = {
       primary: {
-        backgroundColor: colors.safetyOrange,
+        backgroundColor: colors.primary.green,
       },
       secondary: {
-        backgroundColor: colors.black,
+        backgroundColor: colors.neutral.beige,
       },
       outline: {
         backgroundColor: 'transparent',
+        borderWidth: 2,
+        borderColor: colors.primary.green,
       },
       ghost: {
         backgroundColor: 'transparent',
-        borderColor: 'transparent',
+        shadowOpacity: 0,
+        elevation: 0,
       },
     };
 
@@ -81,13 +90,14 @@ export const Button: React.FC<ButtonProps> = ({
       ...sizeStyles[size],
       ...variantStyles[variant],
       ...(fullWidth && { width: '100%' }),
-      ...(disabled && { opacity: 0.5 }),
+      ...(disabled && { opacity: 0.5, cursor: 'not-allowed' }),
     };
   };
 
   const getTextStyle = (): TextStyle => {
     const base: TextStyle = {
-      ...typographyPresets.button,
+      fontWeight: '600',
+      letterSpacing: 0.5,
     };
 
     // Size variations
@@ -106,16 +116,16 @@ export const Button: React.FC<ButtonProps> = ({
     // Variant text colors
     const variantTextStyles: Record<ButtonVariant, TextStyle> = {
       primary: {
-        color: colors.white,
+        color: colors.neutral.white,
       },
       secondary: {
-        color: colors.ivory,
+        color: colors.text.primary,
       },
       outline: {
-        color: colors.black,
+        color: colors.primary.green,
       },
       ghost: {
-        color: colors.black,
+        color: colors.text.primary,
       },
     };
 
@@ -131,10 +141,10 @@ export const Button: React.FC<ButtonProps> = ({
       onPress={onPress}
       disabled={disabled || loading}
       style={[getButtonStyle(), style]}
-      activeOpacity={0.7}
+      activeOpacity={0.8}
     >
       {loading ? (
-        <ActivityIndicator color={variant === 'primary' ? colors.white : colors.black} />
+        <ActivityIndicator color={variant === 'primary' ? colors.neutral.white : colors.primary.green} />
       ) : (
         <Text style={[getTextStyle(), textStyle]}>{children}</Text>
       )}

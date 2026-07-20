@@ -340,7 +340,7 @@ export default function CustomerDetailScreen() {
             textAlignVertical="top"
           />
         ) : (
-          <Text style={styles.notesText}>
+          <Text style={[styles.notesText, !customer.notes && styles.notesTextItalic]}>
             {customer.notes || 'No notes yet. Tap EDIT to add notes.'}
           </Text>
         )}
@@ -537,7 +537,9 @@ const styles = StyleSheet.create({
     fontSize: typography.sizes.sm,
     fontWeight: '600',
     color: colors.primary.black,
-    fontStyle: customer?.notes ? 'normal' : 'italic',
+  },
+  notesTextItalic: {
+    fontStyle: 'italic',
   },
   messagesList: {
     gap: spacing.sm,

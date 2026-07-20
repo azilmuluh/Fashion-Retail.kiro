@@ -4,6 +4,16 @@
  */
 
 export const spacing = {
+  // Named spacing (for easy access)
+  xs: 4,
+  sm: 8,
+  md: 16,
+  lg: 24,
+  xl: 32,
+  '2xl': 48,
+  '3xl': 64,
+  
+  // Numbered spacing (for backward compatibility)
   0: 0,
   1: 4,
   2: 8,
@@ -24,13 +34,13 @@ export type Spacing = typeof spacing;
 
 // Common spacing patterns
 export const spacingPresets = {
-  cardPadding: spacing[6],
-  sectionMargin: spacing[8],
-  elementGap: spacing[4],
-  screenPadding: spacing[5],
-  inputPadding: spacing[4],
+  cardPadding: spacing.md,
+  sectionMargin: spacing.lg,
+  elementGap: spacing.sm,
+  screenPadding: spacing.md,
+  inputPadding: spacing.sm,
   buttonPadding: {
-    vertical: spacing[3],
-    horizontal: spacing[6],
+    vertical: spacing.sm,
+    horizontal: spacing.md,
   },
 } as const;

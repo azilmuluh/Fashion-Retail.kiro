@@ -253,16 +253,16 @@ export default function OnboardingScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.ivory,
+    backgroundColor: colors.neutral.ivory,
   },
   progress: {
     flexDirection: 'row',
     justifyContent: 'center',
-    gap: spacing[2],
-    paddingVertical: spacing[4],
-    backgroundColor: colors.white,
+    gap: spacing.xs,
+    paddingVertical: spacing.sm,
+    backgroundColor: colors.neutral.white,
     borderBottomWidth: 1,
-    borderBottomColor: colors.black,
+    borderBottomColor: colors.primary.black,
   },
   progressDot: {
     width: 40,
@@ -271,52 +271,52 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
   progressDotActive: {
-    backgroundColor: colors.safetyOrange,
+    backgroundColor: colors.primary.orange,
   },
   scrollContent: {
-    padding: spacing[6],
+    padding: spacing.md,
   },
   stepIndicator: {
-    marginBottom: spacing[4],
+    marginBottom: spacing.sm,
   },
   stepCard: {
-    marginBottom: spacing[6],
+    marginBottom: spacing.md,
   },
   stepTitle: {
-    marginBottom: spacing[3],
+    marginBottom: spacing.sm,
   },
   stepDescription: {
     color: colors.text.secondary,
-    marginBottom: spacing[6],
+    marginBottom: spacing.md,
   },
   featureList: {
-    gap: spacing[4],
+    gap: spacing.sm,
   },
   featureItem: {
     flexDirection: 'row',
-    gap: spacing[3],
+    gap: spacing.sm,
     alignItems: 'flex-start',
   },
   featureText: {
     flex: 1,
-    gap: spacing[1],
+    gap: spacing.xs,
   },
   businessInfo: {
-    marginBottom: spacing[4],
+    marginBottom: spacing.sm,
   },
   infoValue: {
     fontSize: 18,
     fontWeight: '600',
-    color: colors.black,
-    marginTop: spacing[1],
+    color: colors.primary.black,
+    marginTop: spacing.xs,
   },
   preferenceItem: {
-    marginBottom: spacing[6],
+    marginBottom: spacing.md,
   },
   currencyOptions: {
     flexDirection: 'row',
-    gap: spacing[3],
-    marginTop: spacing[2],
+    gap: spacing.sm,
+    marginTop: spacing.xs,
   },
   currencyButton: {
     flex: 1,
@@ -324,22 +324,22 @@ const styles = StyleSheet.create({
   timezoneValue: {
     fontSize: 18,
     fontWeight: '600',
-    color: colors.black,
-    marginTop: spacing[2],
+    color: colors.primary.black,
+    marginTop: spacing.xs,
   },
   timezoneNote: {
     color: colors.text.muted,
     fontSize: 14,
-    marginTop: spacing[1],
+    marginTop: spacing.xs,
   },
   actions: {
     flexDirection: 'row',
-    gap: spacing[3],
+    gap: spacing.sm,
   },
   actionButton: {
     flex: 1,
   },
   skipButton: {
-    marginTop: spacing[4],
+    marginTop: spacing.sm,
   },
 });

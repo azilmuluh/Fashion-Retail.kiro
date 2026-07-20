@@ -4,15 +4,12 @@
  */
 
 import { useState } from 'react';
-import { View, ScrollView, StyleSheet, KeyboardAvoidingView, Platform, Alert } from 'react-native';
+import { View, ScrollView, StyleSheet, KeyboardAvoidingView, Platform, Alert, Text } from 'react-native';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import {
   Button,
   Input,
-  Typography,
-  Heading1,
-  BodyText,
   colors,
   spacing,
 } from '@fashion-retail/design-system';
@@ -93,7 +90,16 @@ export default function SignupScreen() {
   }
 
   async function handleSignup() {
-    if (!validate()) return;
+    console.log('handleSignup called');
+    if (!validate()) {
+      console.log('Validation failed');
+      return;
+    }
+
+    console.log('Starting signup process...', {
+      email: formData.email,
+      business_name: formData.businessName,
+    });
 
     setLoading(true);
     const { error } = await signUp(
@@ -107,13 +113,17 @@ export default function SignupScreen() {
     );
     setLoading(false);
 
+    console.log('Signup result:', { error });
+
     if (error) {
+      console.error('Signup error:', error);
       Alert.alert('Signup Failed', error.message);
     } else {
+      console.log('Signup successful!');
       Alert.alert(
         'Success!',
-        'Account created successfully. You can now sign in.',
-        [{ text: 'OK', onPress: () => router.replace('/(auth)/onboarding') }]
+        'Account created successfully. Please check your email to verify your account.',
+        [{ text: 'OK', onPress: () => router.replace('/(auth)/login') }]
       );
     }
   }
@@ -129,10 +139,10 @@ export default function SignupScreen() {
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.header}>
-          <Heading1 style={styles.title}>CREATE ACCOUNT</Heading1>
-          <BodyText style={styles.subtitle}>
+          <Text style={styles.title}>Create Account</Text>
+          <Text style={styles.subtitle}>
             Start managing your fashion retail business
-          </BodyText>
+          </Text>
         </View>
 
         <View style={styles.form}>
@@ -207,9 +217,9 @@ export default function SignupScreen() {
 
           <View style={styles.divider} />
 
-          <BodyText style={styles.loginText}>
+          <Text style={styles.loginText}>
             Already have an account?
-          </BodyText>
+          </Text>
 
           <Button
             variant="outline"
@@ -228,36 +238,46 @@ export default function SignupScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.ivory,
+    backgroundColor: colors.primary.cream,
   },
   scrollContent: {
     flexGrow: 1,
-    padding: spacing[6],
-    paddingTop: spacing[12],
+    padding: spacing.lg,
+    paddingTop: spacing['2xl'],
+    maxWidth: 600,
+    marginHorizontal: 'auto',
+    width: '100%',
   },
   header: {
-    marginBottom: spacing[8],
+    marginBottom: spacing.xl,
   },
   title: {
-    marginBottom: spacing[3],
-    color: colors.black,
+    fontSize: 36,
+    fontWeight: '800',
+    marginBottom: spacing.sm,
+    color: colors.text.primary,
   },
   subtitle: {
+    fontSize: 16,
+    fontWeight: '400',
     color: colors.text.secondary,
+    lineHeight: 24,
   },
   form: {
-    gap: spacing[4],
+    gap: spacing.md,
   },
   signupButton: {
-    marginTop: spacing[4],
+    marginTop: spacing.md,
   },
   divider: {
     height: 1,
-    backgroundColor: colors.border.secondary,
-    marginVertical: spacing[4],
+    backgroundColor: colors.border.primary,
+    marginVertical: spacing.lg,
   },
   loginText: {
     textAlign: 'center',
     color: colors.text.secondary,
+    fontSize: 14,
+    fontWeight: '500',
   },
 });

@@ -4,15 +4,12 @@
  */
 
 import { useState } from 'react';
-import { View, ScrollView, StyleSheet, KeyboardAvoidingView, Platform, Alert } from 'react-native';
+import { View, ScrollView, StyleSheet, KeyboardAvoidingView, Platform, Alert, Text } from 'react-native';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import {
   Button,
   Input,
-  Typography,
-  Heading1,
-  BodyText,
   colors,
   spacing,
 } from '@fashion-retail/design-system';
@@ -67,10 +64,10 @@ export default function LoginScreen() {
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.header}>
-          <Heading1 style={styles.title}>SIGN IN</Heading1>
-          <BodyText style={styles.subtitle}>
+          <Text style={styles.title}>Sign In</Text>
+          <Text style={styles.subtitle}>
             Access your fashion retail dashboard
-          </BodyText>
+          </Text>
         </View>
 
         <View style={styles.form}>
@@ -120,9 +117,9 @@ export default function LoginScreen() {
 
           <View style={styles.divider} />
 
-          <BodyText style={styles.signupText}>
+          <Text style={styles.signupText}>
             Don't have an account?
-          </BodyText>
+          </Text>
 
           <Button
             variant="outline"
@@ -141,37 +138,48 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.ivory,
+    backgroundColor: colors.primary.cream,
   },
   scrollContent: {
     flexGrow: 1,
-    padding: spacing[6],
+    padding: spacing.lg,
     justifyContent: 'center',
+    maxWidth: 500,
+    marginHorizontal: 'auto',
+    width: '100%',
+    minHeight: '100%',
   },
   header: {
-    marginBottom: spacing[8],
+    marginBottom: spacing.xl,
   },
   title: {
-    marginBottom: spacing[3],
-    color: colors.black,
+    fontSize: 36,
+    fontWeight: '800',
+    marginBottom: spacing.sm,
+    color: colors.text.primary,
   },
   subtitle: {
+    fontSize: 16,
+    fontWeight: '400',
     color: colors.text.secondary,
+    lineHeight: 24,
   },
   form: {
-    gap: spacing[4],
+    gap: spacing.md,
   },
   forgotButton: {
     alignSelf: 'flex-end',
-    marginTop: -spacing[2],
+    marginTop: -spacing.xs,
   },
   divider: {
     height: 1,
-    backgroundColor: colors.border.secondary,
-    marginVertical: spacing[4],
+    backgroundColor: colors.border.primary,
+    marginVertical: spacing.lg,
   },
   signupText: {
     textAlign: 'center',
     color: colors.text.secondary,
+    fontSize: 14,
+    fontWeight: '500',
   },
 });

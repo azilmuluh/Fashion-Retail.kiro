@@ -1,11 +1,11 @@
 /**
  * Input Component
- * Neo-Brutalist text input with black border
+ * HopeRise-inspired: Rounded, soft, empathetic design
  */
 
 import React, { useState } from 'react';
 import { View, TextInput, Text, StyleSheet, TextInputProps, ViewStyle, TextStyle } from 'react-native';
-import { colors, borderRadius, spacing, typographyPresets, fontFamilies } from '../tokens';
+import { colors, borderRadius, spacing, fontFamilies } from '../tokens';
 
 export interface InputProps extends TextInputProps {
   label?: string;
@@ -54,37 +54,47 @@ export const Input: React.FC<InputProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: spacing[4],
+    marginBottom: spacing.md,
   },
   label: {
-    ...typographyPresets.label,
+    fontSize: 14,
+    fontWeight: '600',
     color: colors.text.primary,
-    marginBottom: spacing[2],
+    marginBottom: spacing.xs,
+    letterSpacing: 0.3,
   },
   input: {
-    backgroundColor: colors.white,
-    borderWidth: 2,
-    borderColor: colors.black,
-    borderRadius: borderRadius.base,
-    padding: spacing[4],
+    backgroundColor: colors.neutral.white,
+    borderWidth: 1,
+    borderColor: colors.border.primary,
+    borderRadius: borderRadius.md,
+    padding: spacing.md,
     fontSize: 16,
     fontFamily: fontFamilies.body,
     color: colors.text.primary,
+    transition: 'all 0.3s ease',
   },
   inputFocused: {
-    borderColor: colors.safetyOrange,
+    borderColor: colors.primary.green,
+    borderWidth: 2,
+    shadowColor: 'rgba(46, 204, 113, 0.2)',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 1,
+    shadowRadius: 8,
+    elevation: 2,
   },
   inputError: {
     borderColor: colors.status.error,
   },
   errorText: {
-    ...typographyPresets.caption,
+    fontSize: 12,
     color: colors.status.error,
-    marginTop: spacing[1],
+    marginTop: spacing.xs,
+    fontWeight: '500',
   },
   helperText: {
-    ...typographyPresets.caption,
+    fontSize: 12,
     color: colors.text.muted,
-    marginTop: spacing[1],
+    marginTop: spacing.xs,
   },
 });

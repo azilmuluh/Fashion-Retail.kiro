@@ -1,13 +1,13 @@
 {
   "expo": {
-    "name": "Fashion Retail",
+    "name": "Fashion Retail Platform",
     "slug": "fashion-retail-cameroon",
     "version": "1.0.0",
-    "orientation": "portrait",
+    "orientation": "default",
     "userInterfaceStyle": "light",
     "splash": {
       "resizeMode": "contain",
-      "backgroundColor": "#FFFBF5"
+      "backgroundColor": "#F8F5EE"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -18,12 +18,17 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#FFFBF5"
+        "backgroundColor": "#F8F5EE"
       },
       "package": "com.fashionretail.cameroon"
     },
     "web": {
-      "bundler": "metro"
+      "bundler": "metro",
+      "favicon": "./assets/favicon.png",
+      "name": "Fashion Retail Platform - Manage Your Fashion Business",
+      "description": "Complete platform for fashion retailers in Cameroon. Manage inventory, orders, customers, and WhatsApp communication all in one place.",
+      "backgroundColor": "#F8F5EE",
+      "themeColor": "#2ECC71"
     },
     "plugins": [
       "expo-router"

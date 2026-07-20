@@ -20,8 +20,8 @@ export default function Index() {
     const inAuthGroup = segments[0] === '(auth)';
 
     if (!user && !inAuthGroup) {
-      // Redirect to login if not authenticated
-      router.replace('/(auth)/login');
+      // Redirect to demo if not authenticated
+      router.replace('/(auth)/demo');
     } else if (user && inAuthGroup) {
       // Redirect to main app if authenticated
       router.replace('/(tabs)');
@@ -33,7 +33,7 @@ export default function Index() {
 
   return (
     <View style={styles.container}>
-      <ActivityIndicator size="large" color={colors.safetyOrange} />
+      <ActivityIndicator size="large" color={colors.primary.green} />
     </View>
   );
 }
@@ -43,6 +43,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: colors.ivory,
+    backgroundColor: colors.primary.cream,
   },
 });

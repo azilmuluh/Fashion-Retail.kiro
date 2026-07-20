@@ -1,7 +1,3 @@
-/**
- * Dashboard Home Screen - Analytics & Inventory Overview
- */
-
 import React, { useState, useEffect } from 'react';
 import {
   View,
@@ -10,13 +6,18 @@ import {
   StyleSheet,
   ActivityIndicator,
   RefreshControl,
-  Dimensions,
 } from 'react-native';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
+import {
+  DollarSign,
+  Package,
+  ShoppingCart,
+  Users,
+  AlertTriangle,
+  XCircle,
+} from 'lucide-react-native';
 import { colors, spacing, typography } from '@fashion-retail/design-system';
-
-const { width } = Dimensions.get('window');
 
 interface AnalyticsData {
   // Inventory
@@ -135,7 +136,7 @@ export default function DashboardScreen() {
   if (loading) {
     return (
       <View style={styles.centerContainer}>
-        <ActivityIndicator size="large" color={colors.primary.orange} />
+        <ActivityIndicator size="large" color={colors.primary.green} />
       </View>
     );
   }
@@ -147,7 +148,7 @@ export default function DashboardScreen() {
         <RefreshControl
           refreshing={refreshing}
           onRefresh={onRefresh}
-          tintColor={colors.primary.orange}
+          tintColor={colors.primary.green}
         />
       }
     >
@@ -162,7 +163,10 @@ export default function DashboardScreen() {
 
       {/* Revenue Overview */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>💰 REVENUE OVERVIEW</Text>
+        <View style={styles.sectionHeader}>
+          <DollarSign size={20} color={colors.text.primary} />
+          <Text style={styles.sectionTitle}>Revenue Overview</Text>
+        </View>
         <View style={styles.metricsGrid}>
           <View style={[styles.metricCard, styles.primaryMetric]}>
             <Text style={styles.metricValue}>{formatCurrency(analytics?.totalRevenue || 0)}</Text>
@@ -183,7 +187,10 @@ export default function DashboardScreen() {
 
       {/* Inventory Status */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>📦 INVENTORY STATUS</Text>
+        <View style={styles.sectionHeader}>
+          <Package size={20} color={colors.text.primary} />
+          <Text style={styles.sectionTitle}>Inventory Status</Text>
+        </View>
         <View style={styles.metricsGrid}>
           <View style={styles.metricCard}>
             <Text style={styles.metricValue}>{analytics?.totalProducts || 0}</Text>
@@ -275,104 +282,120 @@ export default function DashboardScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.neutral.ivory,
+    backgroundColor: colors.primary.cream,
+    maxWidth: 1400,
+    marginHorizontal: 'auto',
+    width: '100%',
   },
   centerContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: colors.neutral.ivory,
+    backgroundColor: colors.primary.cream,
+    maxWidth: 1400,
+    marginHorizontal: 'auto',
+    width: '100%',
   },
   welcomeCard: {
-    backgroundColor: colors.primary.orange,
-    borderBottomWidth: 6,
-    borderBottomColor: colors.primary.black,
-    padding: spacing.lg,
+    backgroundColor: colors.primary.green,
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
+    padding: spacing.xl,
   },
   welcomeTitle: {
-    fontSize: typography.sizes.xl,
+    fontSize: 28,
     fontWeight: '800',
     color: colors.neutral.white,
     marginBottom: spacing.xs,
   },
   businessName: {
-    fontSize: typography.sizes.lg,
-    fontWeight: '700',
-    color: colors.neutral.white,
+    fontSize: 20,
+    fontWeight: '600',
+    color: 'rgba(255, 255, 255, 0.9)',
     marginBottom: spacing.md,
   },
   badge: {
-    backgroundColor: colors.primary.black,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.xs,
+    borderRadius: 50,
     alignSelf: 'flex-start',
   },
   badgeText: {
-    fontSize: typography.sizes.xs,
-    fontWeight: '800',
+    fontSize: 12,
+    fontWeight: '700',
     color: colors.neutral.white,
   },
   section: {
-    padding: spacing.md,
-    borderBottomWidth: 4,
-    borderBottomColor: colors.primary.black,
+    padding: spacing.lg,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    marginBottom: spacing.md,
   },
   sectionTitle: {
-    fontSize: typography.sizes.lg,
-    fontWeight: '800',
-    color: colors.primary.black,
-    marginBottom: spacing.md,
+    fontSize: 20,
+    fontWeight: '700',
+    color: colors.text.primary,
   },
   metricsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: spacing.sm,
+    gap: spacing.md,
   },
   metricCard: {
     backgroundColor: colors.neutral.white,
-    borderWidth: 4,
-    borderColor: colors.primary.black,
-    padding: spacing.md,
+    borderWidth: 1,
+    borderColor: colors.border.primary,
+    borderRadius: 16,
+    padding: spacing.lg,
     flex: 1,
-    minWidth: (width - spacing.md * 3) / 2 - spacing.sm,
-    shadowColor: colors.primary.black,
-    shadowOffset: { width: 4, height: 4 },
+    minWidth: 200,
+    shadowColor: 'rgba(0, 0, 0, 0.06)',
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 1,
-    shadowRadius: 0,
-    elevation: 4,
+    shadowRadius: 8,
+    elevation: 2,
   },
   primaryMetric: {
-    backgroundColor: colors.primary.orange,
-    minWidth: width - spacing.md * 2,
+    backgroundColor: colors.accent.light,
+    borderColor: colors.primary.green,
+    borderWidth: 2,
+    minWidth: '100%',
   },
   warningMetric: {
-    backgroundColor: '#FFF3E0',
+    backgroundColor: '#FFF4E6',
   },
   dangerMetric: {
     backgroundColor: '#FFEBEE',
   },
   fullWidth: {
-    minWidth: width - spacing.md * 2,
+    minWidth: '100%',
   },
   metricValue: {
-    fontSize: typography.sizes.xl,
+    fontSize: 28,
     fontWeight: '800',
-    color: colors.primary.black,
+    color: colors.text.primary,
     marginBottom: spacing.xs,
   },
   metricLabel: {
-    fontSize: typography.sizes.xs,
-    fontWeight: '700',
-    color: colors.neutral.gray,
+    fontSize: 12,
+    fontWeight: '600',
+    color: colors.text.secondary,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   categoryList: {
-    gap: spacing.sm,
+    gap: spacing.md,
   },
   categoryItem: {
     backgroundColor: colors.neutral.white,
-    borderWidth: 3,
-    borderColor: colors.primary.black,
-    padding: spacing.md,
+    borderWidth: 1,
+    borderColor: colors.border.primary,
+    borderRadius: 16,
+    padding: spacing.lg,
   },
   categoryInfo: {
     flexDirection: 'row',
@@ -380,23 +403,24 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   categoryName: {
-    fontSize: typography.sizes.sm,
-    fontWeight: '800',
-    color: colors.primary.black,
+    fontSize: 14,
+    fontWeight: '700',
+    color: colors.text.primary,
   },
   categoryCount: {
-    fontSize: typography.sizes.sm,
-    fontWeight: '700',
-    color: colors.neutral.gray,
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.text.secondary,
   },
   categoryBar: {
     height: 8,
-    backgroundColor: colors.neutral.ivory,
-    borderWidth: 2,
-    borderColor: colors.primary.black,
+    backgroundColor: colors.primary.cream,
+    borderRadius: 4,
+    overflow: 'hidden',
   },
   categoryBarFill: {
     height: '100%',
-    backgroundColor: colors.primary.orange,
+    backgroundColor: colors.primary.green,
+    borderRadius: 4,
   },
 });
