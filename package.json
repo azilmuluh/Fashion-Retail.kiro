@@ -1,0 +1,28 @@
+{
+  "name": "fashion-retail-cameroon",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "lint": "turbo run lint",
+    "clean": "turbo run clean && rm -rf node_modules",
+    "setup": "./scripts/setup.sh",
+    "supabase:start": "cd supabase && supabase start",
+    "supabase:stop": "cd supabase && supabase stop",
+    "supabase:status": "cd supabase && supabase status",
+    "supabase:push": "cd supabase && supabase db push",
+    "supabase:reset": "cd supabase && supabase db reset",
+    "supabase:types": "cd supabase && supabase gen types typescript --local > ../packages/shared/src/types/database.types.ts",
+    "demo": "open packages/design-system/demo.html"
+  },
+  "devDependencies": {
+    "turbo": "^1.11.0",
+    "supabase": "^1.142.0"
+  }
+}

@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fashion Retail Platform - Design System Demo</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    /* Design Tokens */
+    :root {
+      /* Colors (60/30/10) */
+      --color-ivory: #F5EFE0;
+      --color-black: #000000;
+      --color-orange: #FF6B35;
+      --color-white: #FFFFFF;
+      --color-dark: #161616;
+      --color-gray: #666666;
+      
+      /* Gradient */
+      --gradient-orange: linear-gradient(135deg, #FFB627 0%, #FF6B35 50%, #FF4500 100%);
+      
+      /* Typography */
+      --font-display: 'Orbitron', 'Arial Black', sans-serif;
+      --font-body: 'Inter', system-ui, sans-serif;
+      --font-mono: 'SF Mono', 'Consolas', monospace;
+      
+      /* Spacing */
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --space-5: 20px;
+      --space-6: 24px;
+      --space-8: 32px;
+      
+      /* Border Radius */
+      --radius-base: 8px;
+      --radius-lg: 16px;
+      --radius-full: 9999px;
+    }
+    
+    /* Reset */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    /* Body */
+    body {
+      font-family: var(--font-body);
+      background-color: var(--color-ivory);
+      color: var(--color-black);
+      line-height: 1.5;
+      padding: var(--space-6);
+    }
+    
+    /* Container */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    /* Typography */
+    .display-large {
+      font-family: var(--font-display);
+      font-size: 60px;
+      font-weight: 900;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      line-height: 1.2;
+      margin-bottom: var(--space-4);
+    }
+    
+    .display-medium {
+      font-family: var(--font-display);
+      font-size: 36px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      line-height: 1.2;
+      margin-bottom: var(--space-4);
+    }
+    
+    .display-small {
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      line-height: 1.2;
+    }
+    
+    .body-text {
+      font-family: var(--font-body);
+      font-size: 16px;
+      line-height: 1.5;
+      color: var(--color-black);
+    }
+    
+    .label {
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .caption {
+      font-family: var(--font-body);
+      font-size: 12px;
+      color: var(--color-gray);
+    }
+    
+    /* Card */
+    .card {
+      background: var(--color-white);
+      border: 1px solid var(--color-black);
+      border-radius: var(--radius-lg);
+      padding: var(--space-6);
+      margin-bottom: var(--space-8);
+    }
+    
+    .card-brutal {
+      box-shadow: 4px 4px 0 0 var(--color-black);
+    }
+    
+    /* Button */
+    .btn {
+      font-family: var(--font-display);
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: var(--space-3) var(--space-6);
+      border: 2px solid var(--color-black);
+      border-radius: var(--radius-base);
+      cursor: pointer;
+      transition: opacity 0.2s;
+      display: inline-block;
+      text-decoration: none;
+    }
+    
+    .btn:hover {
+      opacity: 0.9;
+    }
+    
+    .btn-primary {
+      background: var(--color-orange);
+      color: var(--color-white);
+    }
+    
+    .btn-secondary {
+      background: var(--color-black);
+      color: var(--color-ivory);
+    }
+    
+    .btn-outline {
+      background: transparent;
+      color: var(--color-black);
+    }
+    
+    .btn-gradient {
+      background: var(--gradient-orange);
+      color: var(--color-white);
+    }
+    
+    /* Badge */
+    .badge {
+      display: inline-block;
+      font-family: var(--font-body);
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      padding: var(--space-2) var(--space-3);
+      border: 1px solid var(--color-black);
+      border-radius: var(--radius-full);
+    }
+    
+    .badge-accent {
+      background: var(--color-orange);
+      color: var(--color-white);
+    }
+    
+    .badge-default {
+      background: #EEEEEE;
+      color: var(--color-black);
+    }
+    
+    /* Input */
+    .input-group {
+      margin-bottom: var(--space-4);
+    }
+    
+    .input {
+      width: 100%;
+      font-family: var(--font-body);
+      font-size: 16px;
+      padding: var(--space-4);
+      border: 2px solid var(--color-black);
+      border-radius: var(--radius-base);
+      background: var(--color-white);
+    }
+    
+    .input:focus {
+      outline: none;
+      border-color: var(--color-orange);
+    }
+    
+    /* Code Block */
+    .code-block {
+      background: var(--color-dark);
+      color: var(--color-ivory);
+      font-family: var(--font-mono);
+      font-size: 14px;
+      padding: var(--space-4);
+      border: 1px solid var(--color-black);
+      border-radius: var(--radius-base);
+      overflow-x: auto;
+      position: relative;
+    }
+    
+    .code-lang {
+      position: absolute;
+      top: var(--space-2);
+      right: var(--space-2);
+      background: var(--color-orange);
+      color: var(--color-white);
+      padding: var(--space-1) var(--space-2);
+      border-radius: var(--radius-base);
+      font-size: 10px;
+    }
+    
+    /* Grid Layouts */
+    .grid {
+      display: grid;
+      gap: var(--space-4);
+    }
+    
+    .grid-3 {
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+    
+    .color-box {
+      width: 100%;
+      height: 100px;
+      border: 2px solid var(--color-black);
+      border-radius: var(--radius-base);
+      margin-bottom: var(--space-2);
+    }
+    
+    .button-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-3);
+    }
+    
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      margin-bottom: var(--space-4);
+    }
+    
+    /* Section */
+    .section {
+      margin-bottom: var(--space-8);
+    }
+    
+    .section-title {
+      margin-bottom: var(--space-4);
+    }
+    
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: var(--space-4);
+      margin-bottom: var(--space-6);
+    }
+    
+    .stat-card {
+      background: var(--color-white);
+      border: 1px solid var(--color-black);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4);
+      text-align: center;
+    }
+    
+    .principle-item {
+      display: flex;
+      gap: var(--space-3);
+      margin-bottom: var(--space-4);
+      align-items: flex-start;
+    }
+    
+    .principle-text {
+      flex: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    
+    <!-- Header -->
+    <div class="section">
+      <h1 class="display-large">DESIGN SYSTEM</h1>
+      <p class="body-text" style="color: #666;">Neo-Brutalist, Retro-Futuristic Components for Fashion Retail Platform</p>
+    </div>
+
+    <!-- Color Palette -->
+    <div class="card card-brutal section">
+      <h2 class="display-medium section-title">COLOR PALETTE</h2>
+      <p class="body-text" style="margin-bottom: 24px; color: #666;">60/30/10 Rule: 60% Ivory, 30% Black, 10% Safety Orange</p>
+      
+      <div class="grid grid-3">
+        <div style="text-align: center;">
+          <div class="color-box" style="background: #F5EFE0;"></div>
+          <p class="label">IVORY (60%)</p>
+          <p class="caption">#F5EFE0</p>
+        </div>
+        
+        <div style="text-align: center;">
+          <div class="color-box" style="background: #000000;"></div>
+          <p class="label">BLACK (30%)</p>
+          <p class="caption">#000000</p>
+        </div>
+        
+        <div style="text-align: center;">
+          <div class="color-box" style="background: #FF6B35;"></div>
+          <p class="label">ORANGE (10%)</p>
+          <p class="caption">#FF6B35</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Typography -->
+    <div class="card section">
+      <h2 class="display-medium section-title">TYPOGRAPHY</h2>
+      
+      <h1 class="display-large">DISPLAY LARGE</h1>
+      <h2 class="display-medium">DISPLAY MEDIUM</h2>
+      <h3 class="display-small">DISPLAY SMALL</h3>
+      <p class="body-text" style="margin: 16px 0;">
+        Body text uses geometric sans-serif for readability. Clean, modern, and professional appearance.
+      </p>
+      <p class="label" style="margin: 12px 0;">LABEL TEXT (UPPERCASE)</p>
+      <p class="caption">Caption text for small details and metadata</p>
+    </div>
+
+    <!-- Buttons -->
+    <div class="card section">
+      <h2 class="display-medium section-title">BUTTONS</h2>
+      
+      <div class="button-grid">
+        <button class="btn btn-primary">PRIMARY</button>
+        <button class="btn btn-secondary">SECONDARY</button>
+        <button class="btn btn-outline">OUTLINE</button>
+        <button class="btn btn-gradient">GRADIENT CTA</button>
+      </div>
+    </div>
+
+    <!-- Badges -->
+    <div class="card section">
+      <h2 class="display-medium section-title">BADGES</h2>
+      
+      <div class="badge-row">
+        <span class="badge badge-default">DEFAULT</span>
+        <span class="badge badge-accent">ACCENT</span>
+        <span class="badge badge-accent">IN STOCK</span>
+        <span class="badge badge-accent">NEW</span>
+      </div>
+    </div>
+
+    <!-- Inputs -->
+    <div class="card section">
+      <h2 class="display-medium section-title">INPUTS</h2>
+      
+      <div class="input-group">
+        <label class="label" style="display: block; margin-bottom: 8px;">PRODUCT NAME</label>
+        <input type="text" class="input" placeholder="Enter product name">
+      </div>
+      
+      <div class="input-group">
+        <label class="label" style="display: block; margin-bottom: 8px;">EMAIL ADDRESS</label>
+        <input type="email" class="input" placeholder="email@example.com">
+      </div>
+    </div>
+
+    <!-- Code Block -->
+    <div class="card section">
+      <h2 class="display-medium section-title">CODE BLOCKS</h2>
+      
+      <div class="code-block">
+        <span class="code-lang">TYPESCRIPT</span>
+        <pre>import { Button, Card } from '@fashion-retail/design-system';
+
+function ProductCard() {
+  return (
+    &lt;Card variant="brutal"&gt;
+      &lt;Button variant="primary"&gt;
+        ADD TO CART
+      &lt;/Button&gt;
+    &lt;/Card&gt;
+  );
+}</pre>
+      </div>
+    </div>
+
+    <!-- Layout Example -->
+    <div class="card card-brutal section">
+      <h2 class="display-medium section-title">LAYOUT EXAMPLE</h2>
+      
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+        <h3 class="display-small">PRODUCT INVENTORY</h3>
+        <span class="badge badge-accent">24 ITEMS</span>
+      </div>
+      
+      <div class="stats-grid">
+        <div class="stat-card">
+          <p class="label">TOTAL STOCK</p>
+          <h3 class="display-small" style="margin-top: 8px;">1,234</h3>
+        </div>
+        
+        <div class="stat-card">
+          <p class="label">LOW STOCK</p>
+          <h3 class="display-small" style="margin-top: 8px; color: #FF6B35;">12</h3>
+        </div>
+        
+        <div class="stat-card">
+          <p class="label">OUT OF STOCK</p>
+          <h3 class="display-small" style="margin-top: 8px; color: #FF1744;">3</h3>
+        </div>
+      </div>
+      
+      <button class="btn btn-gradient" style="width: 100%; padding: 16px;">
+        ADD NEW PRODUCT
+      </button>
+    </div>
+
+    <!-- Design Principles -->
+    <div class="card section">
+      <h2 class="display-medium section-title">DESIGN PRINCIPLES</h2>
+      
+      <div class="principle-item">
+        <span class="badge badge-accent">1</span>
+        <div class="principle-text">
+          <p class="label">60/30/10 COLOR RULE</p>
+          <p class="caption">Maintain color distribution for visual balance</p>
+        </div>
+      </div>
+      
+      <div class="principle-item">
+        <span class="badge badge-accent">2</span>
+        <div class="principle-text">
+          <p class="label">STRONG BORDERS</p>
+          <p class="caption">Black borders define structure and hierarchy</p>
+        </div>
+      </div>
+      
+      <div class="principle-item">
+        <span class="badge badge-accent">3</span>
+        <div class="principle-text">
+          <p class="label">ALL-CAPS HEADERS</p>
+          <p class="caption">Display font with extra-wide spacing for impact</p>
+        </div>
+      </div>
+      
+      <div class="principle-item">
+        <span class="badge badge-accent">4</span>
+        <div class="principle-text">
+          <p class="label">MINIMAL SHADOWS</p>
+          <p class="caption">Rely on borders for depth, not shadows</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

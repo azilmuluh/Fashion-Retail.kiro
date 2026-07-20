@@ -1,0 +1,44 @@
+{
+  "expo": {
+    "name": "Fashion Retail",
+    "slug": "fashion-retail-cameroon",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#FFFBF5"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.fashionretail.cameroon"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#FFFBF5"
+      },
+      "package": "com.fashionretail.cameroon"
+    },
+    "web": {
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router"
+    ],
+    "scheme": "fashion-retail",
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "fashion-retail-cameroon"
+      }
+    },
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
