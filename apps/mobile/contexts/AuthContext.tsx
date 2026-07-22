@@ -67,16 +67,49 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   async function loadRetailerProfile(userId: string) {
     try {
+      console.log('Loading retailer profile for user:', userId);
+      
       const { data, error } = await supabase
         .from('retailers')
         .select('*')
         .eq('id', userId)
         .single();
 
-      if (error) throw error;
-      setRetailer(data);
+      if (error) {
+        console.error('Error loading retailer profile:', error);
+        
+        // If no retailer record exists, create one
+        if (error.code === 'PGRST116') {
+          console.log('No retailer record found, creating one...');
+          const { data: userData } = await supabase.auth.getUser();
+          
+          if (userData.user) {
+            const { data: newRetailer, error: insertError } = await supabase
+              .from('retailers')
+              .insert({
+                id: userId,
+                email: userData.user.email,
+                business_name: userData.user.user_metadata?.business_name || 'My Fashion Store',
+                phone_number: userData.user.user_metadata?.phone_number || '',
+                whatsapp_number: userData.user.user_metadata?.whatsapp_number || '',
+              })
+              .select()
+              .single();
+            
+            if (insertError) {
+              console.error('Error creating retailer record:', insertError);
+            } else {
+              console.log('Retailer record created successfully');
+              setRetailer(newRetailer);
+            }
+          }
+        }
+      } else {
+        console.log('Retailer profile loaded successfully');
+        setRetailer(data);
+      }
     } catch (error) {
-      console.error('Error loading retailer profile:', error);
+      console.error('Unexpected error loading retailer profile:', error);
     } finally {
       setLoading(false);
     }

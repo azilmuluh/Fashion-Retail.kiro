@@ -4,8 +4,16 @@
  */
 
 import { Tabs } from 'expo-router';
+import React from 'react';
+import { View } from 'react-native';
 import { LayoutDashboard, Package, ShoppingBag, Users, User, MessageCircle } from 'lucide-react-native';
 import { colors } from '@fashion-retail/design-system';
+
+// Safe icon wrapper to prevent undefined errors
+function TabIcon({ Icon, color, size }: { Icon: any; color: string; size: number }) {
+  if (!Icon) return <View style={{ width: size, height: size }} />;
+  return <Icon size={size} color={color} />;
+}
 
 export default function TabsLayout() {
   return (
@@ -50,7 +58,7 @@ export default function TabsLayout() {
             title: 'Dashboard',
             tabBarLabel: 'Dashboard',
             tabBarIcon: ({ color, size }) => (
-              <LayoutDashboard size={size} color={color} />
+              <TabIcon Icon={LayoutDashboard} size={size} color={color} />
             ),
           }}
         />
@@ -61,7 +69,7 @@ export default function TabsLayout() {
             tabBarLabel: 'Products',
             headerShown: false,
             tabBarIcon: ({ color, size }) => (
-              <Package size={size} color={color} />
+              <TabIcon Icon={Package} size={size} color={color} />
             ),
           }}
         />
@@ -71,40 +79,37 @@ export default function TabsLayout() {
             title: 'WhatsApp',
             tabBarLabel: 'WhatsApp',
             tabBarIcon: ({ color, size }) => (
-              <MessageCircle size={size} color={color} />
+              <TabIcon Icon={MessageCircle} size={size} color={color} />
             ),
+          }}
+        />
+        <Tabs.Screen
+          name="diagnostic"
+          options={{
+            title: 'Diagnostic',
+            tabBarLabel: 'Debug',
+            tabBarIcon: ({ color, size }) => (
+              <TabIcon Icon={User} size={size} color={color} />
+            ),
+          }}
+        />
+        {/* Temporarily hidden until routing issue is fixed */}
+        <Tabs.Screen
+          name="customers"
+          options={{
+            href: null, // Hide from tab bar
           }}
         />
         <Tabs.Screen
           name="orders"
           options={{
-            title: 'Orders',
-            tabBarLabel: 'Orders',
-            headerShown: false,
-            tabBarIcon: ({ color, size }) => (
-              <ShoppingBag size={size} color={color} />
-            ),
-          }}
-        />
-        <Tabs.Screen
-          name="customers"
-          options={{
-            title: 'Customers',
-            tabBarLabel: 'Customers',
-            headerShown: false,
-            tabBarIcon: ({ color, size }) => (
-              <Users size={size} color={color} />
-            ),
+            href: null, // Hide from tab bar
           }}
         />
         <Tabs.Screen
           name="profile"
           options={{
-            title: 'Profile',
-            tabBarLabel: 'Profile',
-            tabBarIcon: ({ color, size }) => (
-              <User size={size} color={color} />
-            ),
+            href: null, // Hide from tab bar
           }}
         />
       </Tabs>

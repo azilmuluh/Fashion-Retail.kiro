@@ -3,14 +3,16 @@
 
 [build]
   # Build command - builds the Expo web version
-  command = "cd apps/mobile && npm install && npx expo export:web"
+  # Use `expo export` to match the app's `web.bundler = "metro"` setting
+  command = "cd apps/mobile && npm install && npx expo export"
   
   # Publish directory - where Expo web build outputs
   publish = "apps/mobile/dist"
   
   # Node version
   [build.environment]
-    NODE_VERSION = "18"
+    # Bump to Node 20 to satisfy package engine requirements (>=20.19.4)
+    NODE_VERSION = "20"
 
 # Redirect rules for client-side routing
 [[redirects]]
