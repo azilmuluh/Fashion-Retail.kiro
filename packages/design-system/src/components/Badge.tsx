@@ -67,7 +67,7 @@ export const Badge: React.FC<BadgeProps> = ({
         backgroundColor: colors.status.info,
       },
       accent: {
-        backgroundColor: colors.safetyOrange,
+        backgroundColor: colors.primary.green,
       },
     };
 

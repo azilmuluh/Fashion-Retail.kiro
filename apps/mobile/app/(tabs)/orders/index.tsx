@@ -7,12 +7,14 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   RefreshControl,
+  Animated,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import { Clock, CheckCircle, Package, Truck, XCircle, ShoppingBag, User, CreditCard, Calendar, MapPin } from 'lucide-react-native';
 import { supabase } from '../../../lib/supabase';
 import { useAuth } from '../../../contexts/AuthContext';
 import { Order } from '@fashion-retail/shared';
-import { colors, spacing, typography } from '@fashion-retail/design-system';
+import { colors, spacing } from '@fashion-retail/design-system';
 
 interface OrderWithDetails extends Order {
   customer?: { name: string; phone_number: string };
@@ -29,8 +31,14 @@ export default function OrdersScreen() {
 
   useEffect(() => {
     fetchOrders();
-    subscribeToOrders();
   }, [filter]);
+
+  useEffect(() => {
+    const subscription = subscribeToOrders();
+    return () => {
+      if (subscription) subscription();
+    };
+  }, []);
 
   const fetchOrders = async () => {
     try {
@@ -93,26 +101,27 @@ export default function OrdersScreen() {
 
   const getStatusColor = (status: string) => {
     const statusColors: Record<string, string> = {
-      pending: colors.neutral.gray,
-      confirmed: colors.primary.orange,
-      processing: colors.primary.orange,
-      fulfilled: '#4CAF50',
-      delivered: '#4CAF50',
-      cancelled: '#F44336',
+      pending: colors.status.warning,
+      confirmed: colors.primary.green,
+      processing: colors.status.info,
+      fulfilled: colors.status.success,
+      delivered: colors.status.success,
+      cancelled: colors.status.error,
     };
-    return statusColors[status] || colors.neutral.gray;
+    return statusColors[status] || colors.status.warning;
   };
 
-  const getStatusEmoji = (status: string) => {
-    const emojis: Record<string, string> = {
-      pending: '⏳',
-      confirmed: '✅',
-      processing: '📦',
-      fulfilled: '🚚',
-      delivered: '✨',
-      cancelled: '❌',
+  const getStatusIcon = (status: string) => {
+    const iconProps = { size: 14, color: colors.neutral.white };
+    const icons: Record<string, JSX.Element> = {
+      pending: <Clock {...iconProps} />,
+      confirmed: <CheckCircle {...iconProps} />,
+      processing: <Package {...iconProps} />,
+      fulfilled: <Truck {...iconProps} />,
+      delivered: <CheckCircle {...iconProps} />,
+      cancelled: <XCircle {...iconProps} />,
     };
-    return emojis[status] || '📋';
+    return icons[status] || <Clock {...iconProps} />;
   };
 
   const getPaymentStatusColor = (status: string) => {
@@ -139,69 +148,107 @@ export default function OrdersScreen() {
     return `${amount.toLocaleString()} XAF`;
   };
 
-  const renderOrderCard = ({ item }: { item: OrderWithDetails }) => (
-    <TouchableOpacity
-      style={styles.card}
-      onPress={() => router.push(`/orders/${item.id}`)}
-      activeOpacity={0.8}
-    >
-      <View style={styles.cardHeader}>
-        <Text style={styles.orderNumber}>
-          #{item.id.substring(0, 8).toUpperCase()}
-        </Text>
-        <View style={[styles.statusBadge, { backgroundColor: getStatusColor(item.status) }]}>
-          <Text style={styles.statusText}>
-            {getStatusEmoji(item.status)} {item.status.toUpperCase()}
-          </Text>
-        </View>
-      </View>
+  const renderOrderCard = ({ item, index }: { item: OrderWithDetails; index: number }) => {
+    const fadeAnim = new Animated.Value(0);
+    
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 300,
+      delay: index * 50,
+      useNativeDriver: true,
+    }).start();
 
-      <View style={styles.customerInfo}>
-        <Text style={styles.customerName}>
-          👤 {item.customer?.name || 'Unknown Customer'}
-        </Text>
-        <Text style={styles.customerPhone}>{item.customer?.phone_number}</Text>
-      </View>
-
-      <View style={styles.orderDetails}>
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>📦 Items:</Text>
-          <Text style={styles.detailValue}>{item.order_items_count || 0}</Text>
-        </View>
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>💰 Total:</Text>
-          <Text style={styles.detailValue}>{formatCurrency(item.total_amount)}</Text>
-        </View>
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>💳 Payment:</Text>
-          <View
-            style={[
-              styles.paymentBadge,
-              { backgroundColor: getPaymentStatusColor(item.payment_status) },
-            ]}
-          >
-            <Text style={styles.paymentText}>{item.payment_status.toUpperCase()}</Text>
+    return (
+      <Animated.View style={{ opacity: fadeAnim }}>
+        <TouchableOpacity
+          style={styles.card}
+          onPress={() => router.push(`/orders/${item.id}`)}
+          activeOpacity={0.7}
+        >
+          <View style={styles.cardHeader}>
+            <Text style={styles.orderNumber}>
+              #{item.id.substring(0, 8).toUpperCase()}
+            </Text>
+            <View style={[styles.statusBadge, { backgroundColor: getStatusColor(item.status) }]}>
+              {getStatusIcon(item.status)}
+              <Text style={styles.statusText}>
+                {item.status.charAt(0).toUpperCase() + item.status.slice(1)}
+              </Text>
+            </View>
           </View>
-        </View>
-      </View>
 
-      <View style={styles.cardFooter}>
-        <Text style={styles.dateText}>📅 {formatDate(item.created_at)}</Text>
-        {item.delivery_method && (
-          <Text style={styles.deliveryText}>
-            {item.delivery_method === 'pickup' ? '🏪 PICKUP' : '🚚 DELIVERY'}
-          </Text>
-        )}
-      </View>
-    </TouchableOpacity>
-  );
+          <View style={styles.customerInfo}>
+            <View style={styles.customerRow}>
+              <User size={16} color={colors.text.secondary} />
+              <Text style={styles.customerName}>
+                {item.customer?.name || 'Unknown Customer'}
+              </Text>
+            </View>
+            {item.customer?.phone_number && (
+              <Text style={styles.customerPhone}>{item.customer.phone_number}</Text>
+            )}
+          </View>
 
-  const renderFilterButton = (value: typeof filter, label: string) => (
+          <View style={styles.orderDetails}>
+            <View style={styles.detailRow}>
+              <View style={styles.detailLabelRow}>
+                <ShoppingBag size={14} color={colors.text.secondary} />
+                <Text style={styles.detailLabel}>Items</Text>
+              </View>
+              <Text style={styles.detailValue}>{item.order_items_count || 0}</Text>
+            </View>
+            <View style={styles.detailRow}>
+              <View style={styles.detailLabelRow}>
+                <CreditCard size={14} color={colors.text.secondary} />
+                <Text style={styles.detailLabel}>Total</Text>
+              </View>
+              <Text style={styles.detailValue}>{formatCurrency(item.total_amount)}</Text>
+            </View>
+            <View style={styles.detailRow}>
+              <Text style={styles.detailLabel}>Payment</Text>
+              <View
+                style={[
+                  styles.paymentBadge,
+                  { backgroundColor: getPaymentStatusColor(item.payment_status) },
+                ]}
+              >
+                <Text style={styles.paymentText}>
+                  {item.payment_status.charAt(0).toUpperCase() + item.payment_status.slice(1)}
+                </Text>
+              </View>
+            </View>
+          </View>
+
+          <View style={styles.cardFooter}>
+            <View style={styles.footerItem}>
+              <Calendar size={12} color={colors.text.secondary} />
+              <Text style={styles.dateText}>{formatDate(item.created_at)}</Text>
+            </View>
+            {item.delivery_method && (
+              <View style={styles.footerItem}>
+                {item.delivery_method === 'pickup' ? (
+                  <MapPin size={12} color={colors.primary.green} />
+                ) : (
+                  <Truck size={12} color={colors.primary.green} />
+                )}
+                <Text style={styles.deliveryText}>
+                  {item.delivery_method === 'pickup' ? 'Pickup' : 'Delivery'}
+                </Text>
+              </View>
+            )}
+          </View>
+        </TouchableOpacity>
+      </Animated.View>
+    );
+  };
+
+  const renderFilterButton = (value: typeof filter, label: string, icon: JSX.Element) => (
     <TouchableOpacity
       key={value}
       style={[styles.filterButton, filter === value && styles.filterButtonActive]}
       onPress={() => setFilter(value)}
     >
+      {icon}
       <Text style={[styles.filterText, filter === value && styles.filterTextActive]}>
         {label}
       </Text>
@@ -211,7 +258,8 @@ export default function OrdersScreen() {
   if (loading) {
     return (
       <View style={styles.centerContainer}>
-        <ActivityIndicator size="large" color={colors.primary.orange} />
+        <ActivityIndicator size="large" color={colors.primary.green} />
+        <Text style={styles.loadingText}>Loading orders...</Text>
       </View>
     );
   }
@@ -219,15 +267,16 @@ export default function OrdersScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.filterContainer}>
-        {renderFilterButton('all', 'ALL')}
-        {renderFilterButton('pending', 'PENDING')}
-        {renderFilterButton('confirmed', 'CONFIRMED')}
-        {renderFilterButton('processing', 'PROCESSING')}
+        {renderFilterButton('all', 'All', <ShoppingBag size={16} color={filter === 'all' ? colors.neutral.white : colors.text.primary} />)}
+        {renderFilterButton('pending', 'Pending', <Clock size={16} color={filter === 'pending' ? colors.neutral.white : colors.status.warning} />)}
+        {renderFilterButton('confirmed', 'Confirmed', <CheckCircle size={16} color={filter === 'confirmed' ? colors.neutral.white : colors.primary.green} />)}
+        {renderFilterButton('processing', 'Processing', <Package size={16} color={filter === 'processing' ? colors.neutral.white : colors.status.info} />)}
       </View>
 
       <View style={styles.statsHeader}>
+        <ShoppingBag size={16} color={colors.neutral.white} />
         <Text style={styles.statsText}>
-          {orders.length} ORDER{orders.length !== 1 ? 'S' : ''}
+          {orders.length} Order{orders.length !== 1 ? 's' : ''}
         </Text>
       </View>
 
@@ -240,16 +289,17 @@ export default function OrdersScreen() {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor={colors.primary.orange}
+            tintColor={colors.primary.green}
           />
         }
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
+            <ShoppingBag size={64} color={colors.border.primary} />
             <Text style={styles.emptyText}>
               {filter === 'all' ? 'No orders yet' : `No ${filter} orders`}
             </Text>
             <Text style={styles.emptySubtext}>
-              Orders will appear here when customers place them via WhatsApp
+              Orders will appear here when customers place them
             </Text>
           </View>
         }
@@ -261,130 +311,166 @@ export default function OrdersScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.neutral.ivory,
+    backgroundColor: colors.primary.cream,
   },
   centerContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: colors.neutral.ivory,
+    backgroundColor: colors.primary.cream,
+  },
+  loadingText: {
+    marginTop: spacing.md,
+    fontSize: 14,
+    color: colors.text.secondary,
+    fontWeight: '500',
   },
   filterContainer: {
     flexDirection: 'row',
-    padding: spacing.sm,
-    backgroundColor: colors.neutral.ivory,
-    borderBottomWidth: 4,
-    borderBottomColor: colors.primary.black,
+    padding: spacing.md,
+    backgroundColor: colors.primary.cream,
     gap: spacing.sm,
   },
   filterButton: {
     flex: 1,
     backgroundColor: colors.neutral.white,
-    borderWidth: 3,
-    borderColor: colors.primary.black,
+    borderWidth: 1,
+    borderColor: colors.border.primary,
+    borderRadius: 50,
     paddingVertical: spacing.sm,
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    shadowColor: 'rgba(0, 0, 0, 0.05)',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   filterButtonActive: {
-    backgroundColor: colors.primary.orange,
+    backgroundColor: colors.primary.green,
+    borderColor: colors.primary.green,
   },
   filterText: {
-    fontSize: typography.sizes.xs,
-    fontWeight: '800',
-    color: colors.primary.black,
+    fontSize: 13,
+    fontWeight: '600',
+    color: colors.text.primary,
   },
   filterTextActive: {
     color: colors.neutral.white,
   },
   statsHeader: {
-    backgroundColor: colors.primary.black,
+    backgroundColor: colors.primary.green,
     padding: spacing.sm,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.xs,
   },
   statsText: {
-    fontSize: typography.sizes.sm,
-    fontWeight: '800',
+    fontSize: 13,
+    fontWeight: '700',
     color: colors.neutral.white,
-    textAlign: 'center',
   },
   listContent: {
-    padding: spacing.md,
+    padding: spacing.lg,
   },
   card: {
     backgroundColor: colors.neutral.white,
-    borderWidth: 4,
-    borderColor: colors.primary.black,
-    padding: spacing.md,
+    borderWidth: 1,
+    borderColor: colors.border.primary,
+    borderRadius: 16,
+    padding: spacing.lg,
     marginBottom: spacing.md,
-    shadowColor: colors.primary.black,
-    shadowOffset: { width: 6, height: 6 },
+    shadowColor: 'rgba(0, 0, 0, 0.08)',
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 1,
-    shadowRadius: 0,
-    elevation: 6,
+    shadowRadius: 12,
+    elevation: 3,
   },
   cardHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: spacing.sm,
+    marginBottom: spacing.md,
   },
   orderNumber: {
-    fontSize: typography.sizes.lg,
-    fontWeight: '800',
-    color: colors.primary.black,
+    fontSize: 18,
+    fontWeight: '700',
+    color: colors.text.primary,
   },
   statusBadge: {
     paddingHorizontal: spacing.sm,
-    paddingVertical: 4,
+    paddingVertical: 6,
+    borderRadius: 50,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
   },
   statusText: {
-    fontSize: typography.sizes.xs,
-    fontWeight: '700',
+    fontSize: 12,
+    fontWeight: '600',
     color: colors.neutral.white,
   },
   customerInfo: {
-    marginBottom: spacing.sm,
+    marginBottom: spacing.md,
+    paddingBottom: spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border.primary,
+  },
+  customerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    marginBottom: 4,
   },
   customerName: {
-    fontSize: typography.sizes.md,
-    fontWeight: '700',
-    color: colors.primary.black,
-    marginBottom: 2,
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.text.primary,
   },
   customerPhone: {
-    fontSize: typography.sizes.sm,
-    fontWeight: '600',
-    color: colors.neutral.gray,
+    fontSize: 13,
+    fontWeight: '500',
+    color: colors.text.secondary,
+    marginLeft: 24,
   },
   orderDetails: {
-    backgroundColor: colors.neutral.ivory,
-    borderWidth: 3,
-    borderColor: colors.primary.black,
-    padding: spacing.sm,
-    marginBottom: spacing.sm,
-    gap: spacing.xs,
+    backgroundColor: colors.primary.cream,
+    borderRadius: 12,
+    padding: spacing.md,
+    marginBottom: spacing.md,
+    gap: spacing.sm,
   },
   detailRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
+  detailLabelRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+  },
   detailLabel: {
-    fontSize: typography.sizes.sm,
-    fontWeight: '700',
-    color: colors.neutral.gray,
+    fontSize: 13,
+    fontWeight: '600',
+    color: colors.text.secondary,
   },
   detailValue: {
-    fontSize: typography.sizes.sm,
+    fontSize: 14,
     fontWeight: '700',
-    color: colors.primary.black,
+    color: colors.text.primary,
   },
   paymentBadge: {
     paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
+    paddingVertical: 4,
+    borderRadius: 50,
   },
   paymentText: {
-    fontSize: typography.sizes.xs,
-    fontWeight: '700',
+    fontSize: 11,
+    fontWeight: '600',
     color: colors.neutral.white,
   },
   cardFooter: {
@@ -392,33 +478,40 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
+  footerItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
   dateText: {
-    fontSize: typography.sizes.xs,
-    fontWeight: '600',
-    color: colors.neutral.gray,
+    fontSize: 12,
+    fontWeight: '500',
+    color: colors.text.secondary,
   },
   deliveryText: {
-    fontSize: typography.sizes.xs,
-    fontWeight: '700',
-    color: colors.primary.orange,
+    fontSize: 12,
+    fontWeight: '600',
+    color: colors.primary.green,
   },
   emptyContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: spacing.xl * 2,
+    paddingVertical: spacing['2xl'] * 2,
     paddingHorizontal: spacing.lg,
   },
   emptyText: {
-    fontSize: typography.sizes.lg,
-    fontWeight: '800',
-    color: colors.primary.black,
+    fontSize: 18,
+    fontWeight: '700',
+    color: colors.text.primary,
     textAlign: 'center',
+    marginTop: spacing.lg,
     marginBottom: spacing.sm,
   },
   emptySubtext: {
-    fontSize: typography.sizes.md,
-    fontWeight: '600',
-    color: colors.neutral.gray,
+    fontSize: 14,
+    fontWeight: '500',
+    color: colors.text.secondary,
     textAlign: 'center',
+    lineHeight: 20,
   },
 });

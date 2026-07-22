@@ -42,15 +42,30 @@ export default function LoginScreen() {
   }
 
   async function handleLogin() {
-    if (!validate()) return;
+    console.log('=== LOGIN DEBUG START ===');
+    console.log('Email:', email);
+    
+    if (!validate()) {
+      console.log('Validation failed');
+      return;
+    }
 
+    console.log('Validation passed, attempting login...');
     setLoading(true);
     const { error } = await signIn(email, password);
     setLoading(false);
 
+    console.log('Login result:', { error });
+
     if (error) {
+      console.error('Login error:', error);
       Alert.alert('Login Failed', error.message);
+    } else {
+      console.log('Login successful! Redirecting to dashboard...');
+      // Force redirect to dashboard
+      router.replace('/(tabs)');
     }
+    console.log('=== LOGIN DEBUG END ===');
   }
 
   return (

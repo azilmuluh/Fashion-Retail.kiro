@@ -8,12 +8,14 @@ import {
   ActivityIndicator,
   RefreshControl,
   TextInput,
+  Animated,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import { Search, Users, Phone, Tag, ShoppingBag, DollarSign, Calendar } from 'lucide-react-native';
 import { supabase } from '../../../lib/supabase';
 import { useAuth } from '../../../contexts/AuthContext';
 import { Customer } from '@fashion-retail/shared';
-import { colors, spacing, typography } from '@fashion-retail/design-system';
+import { colors, spacing } from '@fashion-retail/design-system';
 
 export default function CustomersScreen() {
   const router = useRouter();
@@ -121,59 +123,79 @@ export default function CustomersScreen() {
     return `${amount.toLocaleString()} XAF`;
   };
 
-  const renderCustomerCard = ({ item }: { item: Customer }) => (
-    <TouchableOpacity
-      style={styles.card}
-      onPress={() => router.push(`/customers/${item.id}`)}
-      activeOpacity={0.8}
-    >
-      <View style={styles.cardHeader}>
-        <View style={styles.customerInfo}>
-          <Text style={styles.customerName}>{item.name || 'Unknown'}</Text>
-          <Text style={styles.customerPhone}>{item.phone}</Text>
-        </View>
-        {item.tags && item.tags.length > 0 && (
-          <View style={styles.tagContainer}>
-            <View style={styles.tag}>
-              <Text style={styles.tagText}>{item.tags[0]}</Text>
+  const renderCustomerCard = ({ item, index }: { item: Customer; index: number }) => {
+    const fadeAnim = new Animated.Value(0);
+    
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 300,
+      delay: index * 50,
+      useNativeDriver: true,
+    }).start();
+
+    return (
+      <Animated.View style={{ opacity: fadeAnim }}>
+        <TouchableOpacity
+          style={styles.card}
+          onPress={() => router.push(`/customers/${item.id}`)}
+          activeOpacity={0.7}
+        >
+          <View style={styles.cardHeader}>
+            <View style={styles.customerInfo}>
+              <Text style={styles.customerName}>{item.name || 'Unknown'}</Text>
+              <View style={styles.phoneRow}>
+                <Phone size={14} color={colors.text.secondary} />
+                <Text style={styles.customerPhone}>{item.phone}</Text>
+              </View>
             </View>
-            {item.tags.length > 1 && (
-              <Text style={styles.moreTagsText}>+{item.tags.length - 1}</Text>
+            {item.tags && item.tags.length > 0 && (
+              <View style={styles.tagContainer}>
+                <View style={styles.tag}>
+                  <Tag size={10} color={colors.neutral.white} />
+                  <Text style={styles.tagText}>{item.tags[0]}</Text>
+                </View>
+                {item.tags.length > 1 && (
+                  <Text style={styles.moreTagsText}>+{item.tags.length - 1}</Text>
+                )}
+              </View>
             )}
           </View>
-        )}
-      </View>
 
-      <View style={styles.statsContainer}>
-        <View style={styles.statItem}>
-          <Text style={styles.statLabel}>ORDERS</Text>
-          <Text style={styles.statValue}>{item.total_orders || 0}</Text>
-        </View>
-        <View style={styles.statDivider} />
-        <View style={styles.statItem}>
-          <Text style={styles.statLabel}>SPENT</Text>
-          <Text style={styles.statValue}>
-            {formatCurrency(item.total_spent || 0)}
-          </Text>
-        </View>
-        <View style={styles.statDivider} />
-        <View style={styles.statItem}>
-          <Text style={styles.statLabel}>LAST ORDER</Text>
-          <Text style={styles.statValue}>
-            {item.last_order_date ? formatDate(item.last_order_date) : 'Never'}
-          </Text>
-        </View>
-      </View>
+          <View style={styles.statsContainer}>
+            <View style={styles.statItem}>
+              <ShoppingBag size={16} color={colors.primary.green} />
+              <Text style={styles.statLabel}>Orders</Text>
+              <Text style={styles.statValue}>{item.total_orders || 0}</Text>
+            </View>
+            <View style={styles.statDivider} />
+            <View style={styles.statItem}>
+              <DollarSign size={16} color={colors.primary.green} />
+              <Text style={styles.statLabel}>Spent</Text>
+              <Text style={styles.statValue}>
+                {formatCurrency(item.total_spent || 0)}
+              </Text>
+            </View>
+            <View style={styles.statDivider} />
+            <View style={styles.statItem}>
+              <Calendar size={16} color={colors.primary.green} />
+              <Text style={styles.statLabel}>Last Order</Text>
+              <Text style={styles.statValue}>
+                {item.last_order_date ? formatDate(item.last_order_date) : 'Never'}
+              </Text>
+            </View>
+          </View>
 
-      {item.notes && (
-        <View style={styles.notesContainer}>
-          <Text style={styles.notesText} numberOfLines={2}>
-            {item.notes}
-          </Text>
-        </View>
-      )}
-    </TouchableOpacity>
-  );
+          {item.notes && (
+            <View style={styles.notesContainer}>
+              <Text style={styles.notesText} numberOfLines={2}>
+                {item.notes}
+              </Text>
+            </View>
+          )}
+        </TouchableOpacity>
+      </Animated.View>
+    );
+  };
 
   const renderTagFilter = (tag: string) => (
     <TouchableOpacity
@@ -195,7 +217,8 @@ export default function CustomersScreen() {
   if (loading) {
     return (
       <View style={styles.centerContainer}>
-        <ActivityIndicator size="large" color={colors.primary.orange} />
+        <ActivityIndicator size="large" color={colors.primary.green} />
+        <Text style={styles.loadingText}>Loading customers...</Text>
       </View>
     );
   }
@@ -205,18 +228,21 @@ export default function CustomersScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.searchContainer}>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search by name or phone..."
-          placeholderTextColor={colors.neutral.gray}
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-        />
+        <View style={styles.searchInputWrapper}>
+          <Search size={20} color={colors.text.secondary} style={styles.searchIcon} />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search by name or phone..."
+            placeholderTextColor={colors.text.secondary}
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+          />
+        </View>
       </View>
 
       {allTags.length > 0 && (
         <View style={styles.tagsFilterContainer}>
-          <Text style={styles.filterLabel}>FILTER BY TAG:</Text>
+          <Text style={styles.filterLabel}>Filter by tag:</Text>
           <FlatList
             horizontal
             data={allTags}
@@ -229,9 +255,9 @@ export default function CustomersScreen() {
       )}
 
       <View style={styles.statsHeader}>
+        <Users size={16} color={colors.neutral.white} />
         <Text style={styles.statsHeaderText}>
-          {filteredCustomers.length} CUSTOMER
-          {filteredCustomers.length !== 1 ? 'S' : ''}
+          {filteredCustomers.length} Customer{filteredCustomers.length !== 1 ? 's' : ''}
         </Text>
       </View>
 
@@ -244,11 +270,12 @@ export default function CustomersScreen() {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor={colors.primary.orange}
+            tintColor={colors.primary.green}
           />
         }
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
+            <Users size={64} color={colors.border.primary} />
             <Text style={styles.emptyText}>
               {searchQuery || selectedTag
                 ? 'No customers match your filters'
@@ -257,7 +284,7 @@ export default function CustomersScreen() {
             <Text style={styles.emptySubtext}>
               {searchQuery || selectedTag
                 ? 'Try adjusting your search or filters'
-                : 'Customers will appear here when they message you on WhatsApp'}
+                : 'Customers will appear here when they place orders'}
             </Text>
           </View>
         }
@@ -269,88 +296,113 @@ export default function CustomersScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.neutral.ivory,
+    backgroundColor: colors.primary.cream,
   },
   centerContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: colors.neutral.ivory,
+    backgroundColor: colors.primary.cream,
+  },
+  loadingText: {
+    marginTop: spacing.md,
+    fontSize: 14,
+    color: colors.text.secondary,
+    fontWeight: '500',
   },
   searchContainer: {
-    padding: spacing.md,
-    backgroundColor: colors.neutral.ivory,
-    borderBottomWidth: 4,
-    borderBottomColor: colors.primary.black,
+    padding: spacing.lg,
+    backgroundColor: colors.primary.cream,
+  },
+  searchInputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.neutral.white,
+    borderWidth: 1,
+    borderColor: colors.border.primary,
+    borderRadius: 16,
+    paddingHorizontal: spacing.md,
+    shadowColor: 'rgba(0, 0, 0, 0.05)',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  searchIcon: {
+    marginRight: spacing.sm,
   },
   searchInput: {
-    backgroundColor: colors.neutral.white,
-    borderWidth: 3,
-    borderColor: colors.primary.black,
-    paddingHorizontal: spacing.md,
+    flex: 1,
     paddingVertical: spacing.sm,
-    fontSize: typography.sizes.md,
-    fontWeight: '600',
+    fontSize: 15,
+    fontWeight: '500',
+    color: colors.text.primary,
   },
   tagsFilterContainer: {
-    backgroundColor: colors.neutral.ivory,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderBottomWidth: 4,
-    borderBottomColor: colors.primary.black,
+    backgroundColor: colors.primary.cream,
+    paddingHorizontal: spacing.lg,
+    paddingBottom: spacing.md,
   },
   filterLabel: {
-    fontSize: typography.sizes.xs,
-    fontWeight: '800',
-    color: colors.primary.black,
-    marginBottom: spacing.xs,
+    fontSize: 12,
+    fontWeight: '700',
+    color: colors.text.secondary,
+    marginBottom: spacing.sm,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   tagsFilterList: {
     paddingVertical: spacing.xs,
   },
   filterTag: {
     backgroundColor: colors.neutral.white,
-    borderWidth: 3,
-    borderColor: colors.primary.black,
-    paddingHorizontal: spacing.md,
+    borderWidth: 1,
+    borderColor: colors.border.primary,
+    paddingHorizontal: spacing.lg,
     paddingVertical: spacing.xs,
+    borderRadius: 50,
     marginRight: spacing.sm,
   },
   filterTagActive: {
-    backgroundColor: colors.primary.orange,
+    backgroundColor: colors.primary.green,
+    borderColor: colors.primary.green,
   },
   filterTagText: {
-    fontSize: typography.sizes.sm,
-    fontWeight: '700',
-    color: colors.primary.black,
+    fontSize: 13,
+    fontWeight: '600',
+    color: colors.text.primary,
   },
   filterTagTextActive: {
     color: colors.neutral.white,
   },
   statsHeader: {
-    backgroundColor: colors.primary.black,
+    backgroundColor: colors.primary.green,
     padding: spacing.sm,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.xs,
   },
   statsHeaderText: {
-    fontSize: typography.sizes.sm,
-    fontWeight: '800',
+    fontSize: 13,
+    fontWeight: '700',
     color: colors.neutral.white,
-    textAlign: 'center',
   },
   listContent: {
-    padding: spacing.md,
+    padding: spacing.lg,
   },
   card: {
     backgroundColor: colors.neutral.white,
-    borderWidth: 4,
-    borderColor: colors.primary.black,
-    padding: spacing.md,
+    borderWidth: 1,
+    borderColor: colors.border.primary,
+    borderRadius: 16,
+    padding: spacing.lg,
     marginBottom: spacing.md,
-    shadowColor: colors.primary.black,
-    shadowOffset: { width: 6, height: 6 },
+    shadowColor: 'rgba(0, 0, 0, 0.08)',
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 1,
-    shadowRadius: 0,
-    elevation: 6,
+    shadowRadius: 12,
+    elevation: 3,
   },
   cardHeader: {
     flexDirection: 'row',
@@ -362,95 +414,103 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   customerName: {
-    fontSize: typography.sizes.lg,
-    fontWeight: '800',
-    color: colors.primary.black,
+    fontSize: 18,
+    fontWeight: '700',
+    color: colors.text.primary,
     marginBottom: spacing.xs,
   },
+  phoneRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+  },
   customerPhone: {
-    fontSize: typography.sizes.sm,
-    fontWeight: '600',
-    color: colors.neutral.gray,
+    fontSize: 14,
+    fontWeight: '500',
+    color: colors.text.secondary,
   },
   tagContainer: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   tag: {
-    backgroundColor: colors.primary.orange,
+    backgroundColor: colors.accent.light,
     paddingHorizontal: spacing.sm,
     paddingVertical: 4,
+    borderRadius: 50,
     marginLeft: spacing.xs,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
   },
   tagText: {
-    fontSize: typography.sizes.xs,
-    fontWeight: '700',
-    color: colors.neutral.white,
+    fontSize: 11,
+    fontWeight: '600',
+    color: colors.primary.green,
   },
   moreTagsText: {
-    fontSize: typography.sizes.xs,
-    fontWeight: '700',
-    color: colors.neutral.gray,
+    fontSize: 11,
+    fontWeight: '600',
+    color: colors.text.secondary,
     marginLeft: spacing.xs,
   },
   statsContainer: {
     flexDirection: 'row',
-    backgroundColor: colors.neutral.ivory,
-    borderWidth: 3,
-    borderColor: colors.primary.black,
-    padding: spacing.sm,
+    backgroundColor: colors.primary.cream,
+    borderRadius: 12,
+    padding: spacing.md,
   },
   statItem: {
     flex: 1,
     alignItems: 'center',
+    gap: 4,
   },
   statDivider: {
-    width: 3,
-    backgroundColor: colors.primary.black,
-    marginHorizontal: spacing.xs,
+    width: 1,
+    backgroundColor: colors.border.primary,
+    marginHorizontal: spacing.sm,
   },
   statLabel: {
-    fontSize: typography.sizes.xs,
-    fontWeight: '800',
-    color: colors.neutral.gray,
-    marginBottom: spacing.xs,
+    fontSize: 11,
+    fontWeight: '600',
+    color: colors.text.secondary,
   },
   statValue: {
-    fontSize: typography.sizes.sm,
+    fontSize: 14,
     fontWeight: '700',
-    color: colors.primary.black,
+    color: colors.text.primary,
   },
   notesContainer: {
-    marginTop: spacing.sm,
+    marginTop: spacing.md,
     padding: spacing.sm,
-    backgroundColor: colors.neutral.ivory,
-    borderWidth: 2,
-    borderColor: colors.primary.black,
-    borderStyle: 'dashed',
+    backgroundColor: colors.accent.light,
+    borderRadius: 8,
   },
   notesText: {
-    fontSize: typography.sizes.sm,
-    fontWeight: '600',
-    color: colors.neutral.gray,
-    fontStyle: 'italic',
+    fontSize: 13,
+    fontWeight: '500',
+    color: colors.text.secondary,
+    lineHeight: 18,
   },
   emptyContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: spacing.xl * 2,
+    paddingVertical: spacing['2xl'] * 2,
     paddingHorizontal: spacing.lg,
   },
   emptyText: {
-    fontSize: typography.sizes.lg,
-    fontWeight: '800',
-    color: colors.primary.black,
+    fontSize: 18,
+    fontWeight: '700',
+    color: colors.text.primary,
     textAlign: 'center',
+    marginTop: spacing.lg,
     marginBottom: spacing.sm,
   },
   emptySubtext: {
-    fontSize: typography.sizes.md,
-    fontWeight: '600',
-    color: colors.neutral.gray,
+    fontSize: 14,
+    fontWeight: '500',
+    color: colors.text.secondary,
     textAlign: 'center',
+    lineHeight: 20,
   },
 });

@@ -11,7 +11,6 @@ import {
   ScrollView,
   StyleSheet,
   TouchableOpacity,
-  Image,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import {
@@ -63,11 +62,6 @@ export default function DemoScreen() {
     <View style={styles.container}>
       {/* Header with CTA */}
       <View style={styles.demoHeader}>
-        <Image
-          source={require('../../assets/logo.png')}
-          style={styles.logo}
-          resizeMode="contain"
-        />
         <View style={styles.demoBadge}>
           <Eye size={14} color={colors.neutral.white} />
           <Text style={styles.demoBadgeText}>DEMO MODE</Text>
@@ -312,11 +306,6 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 24,
     alignItems: 'center',
   },
-  logo: {
-    width: 120,
-    height: 60,
-    marginBottom: spacing.md,
-  },
   demoBadge: {
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
     paddingHorizontal: spacing.lg,
@@ -507,43 +496,7 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
   },
   featureIcon: {
-    width: 34,
-    height: 34,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    marginBottom: spacing.md,
-  },
-  iconTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: colors.text.primary,
-  },
-  logo: {
-    width: 120,
-    height: 80,
-    marginBottom: spacing.md,
-  },
-  demoBadge: {
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.xs,
-    borderRadius: 50,
-    marginBottom: spacing.md,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  demoBadgeText: {
-    marginLeft: spacing.xs,
-    fontSize: 12,
-    fontWeight: '700',
-    color: colors.neutral.white,
-    letterSpacing: 0.5,
+    fontSize: 28,
   },
   featureContent: {
     flex: 1,

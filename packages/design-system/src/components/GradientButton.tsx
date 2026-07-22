@@ -41,7 +41,7 @@ export const GradientButton: React.FC<GradientButtonProps> = ({
       flexDirection: 'row',
       // Using solid color as fallback
       // In production, wrap with LinearGradient from react-native-linear-gradient
-      backgroundColor: colors.safetyOrange,
+      backgroundColor: colors.primary.green,
     };
 
     const sizeStyles: Record<ButtonSize, ViewStyle> = {

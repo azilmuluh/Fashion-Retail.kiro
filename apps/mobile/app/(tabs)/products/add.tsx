@@ -13,20 +13,13 @@ import {
   Alert,
   TouchableOpacity,
   Image,
+  Text,
+  TextInput,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
-import {
-  Button,
-  Input,
-  Card,
-  Heading2,
-  BodyText,
-  Label,
-  colors,
-  spacing,
-  borderRadius,
-} from '@fashion-retail/design-system';
+import { Image as ImageIcon, X, Plus, Check } from 'lucide-react-native';
+import { colors, spacing } from '@fashion-retail/design-system';
 import { supabase } from '../../../lib/supabase';
 import { useAuth } from '../../../contexts/AuthContext';
 import {
@@ -177,162 +170,200 @@ export default function AddProductScreen() {
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
       >
-        <Card variant="brutal" style={styles.card}>
-          <Heading2 style={styles.title}>ADD NEW PRODUCT</Heading2>
+        <View style={styles.card}>
+          <Text style={styles.title}>Add New Product</Text>
 
-          {/* Images */}
+          {/* Images Section */}
           <View style={styles.section}>
-            <Label>PRODUCT IMAGES</Label>
-            <BodyText style={styles.helperText}>
+            <Text style={styles.sectionLabel}>Product Images</Text>
+            <Text style={styles.helperText}>
               Add up to 5 images (first will be primary)
-            </BodyText>
+            </Text>
             
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              <View style={styles.imagesContainer}>
+            {images.length > 0 && (
+              <ScrollView horizontal style={styles.imagesContainer} showsHorizontalScrollIndicator={false}>
                 {images.map((uri, index) => (
                   <View key={index} style={styles.imageWrapper}>
                     <Image source={{ uri }} style={styles.image} />
                     <TouchableOpacity
-                      onPress={() => removeImage(index)}
                       style={styles.removeButton}
+                      onPress={() => removeImage(index)}
                     >
-                      <BodyText style={styles.removeButtonText}>✕</BodyText>
+                      <X size={14} color={colors.neutral.white} />
                     </TouchableOpacity>
                   </View>
                 ))}
-                
-                {images.length < 5 && (
-                  <TouchableOpacity onPress={pickImage} style={styles.addImageButton}>
-                    <BodyText style={styles.addImageText}>+ Add Image</BodyText>
-                  </TouchableOpacity>
-                )}
-              </View>
-            </ScrollView>
+              </ScrollView>
+            )}
+            
+            {images.length < 5 && (
+              <TouchableOpacity onPress={pickImage} style={styles.addImageButton}>
+                <Plus size={24} color={colors.primary.green} />
+                <Text style={styles.addImageText}>Add Image</Text>
+              </TouchableOpacity>
+            )}
           </View>
 
-          {/* Basic Information */}
-          <Input
-            label="PRODUCT NAME"
-            placeholder="Red Summer Dress"
-            value={formData.name}
-            onChangeText={(text) => updateField('name', text)}
-            error={errors.name}
-          />
-
-          <Input
-            label="DESCRIPTION"
-            placeholder="Beautiful red summer dress perfect for..."
-            value={formData.description}
-            onChangeText={(text) => updateField('description', text)}
-            multiline
-            numberOfLines={3}
-          />
-
-          {/* Category Selection */}
+          {/* Product Name */}
           <View style={styles.section}>
-            <Label>CATEGORY</Label>
-            {errors.category && (
-              <BodyText style={styles.errorText}>{errors.category}</BodyText>
-            )}
+            <Text style={styles.sectionLabel}>Product Name *</Text>
+            <TextInput
+              style={[styles.textInput, errors.name && styles.inputError]}
+              value={formData.name}
+              onChangeText={(text) => updateField('name', text)}
+              placeholder="e.g., Blue Floral Midi Dress"
+              placeholderTextColor={colors.text.secondary}
+            />
+            {errors.name && <Text style={styles.errorText}>{errors.name}</Text>}
+          </View>
+
+          {/* Description */}
+          <View style={styles.section}>
+            <Text style={styles.sectionLabel}>Description</Text>
+            <TextInput
+              style={[styles.textInput, styles.textArea]}
+              value={formData.description}
+              onChangeText={(text) => updateField('description', text)}
+              placeholder="Describe your product..."
+              placeholderTextColor={colors.text.secondary}
+              multiline
+              numberOfLines={4}
+              textAlignVertical="top"
+            />
+          </View>
+
+          {/* Category */}
+          <View style={styles.section}>
+            <Text style={styles.sectionLabel}>Category *</Text>
             <View style={styles.categoryGrid}>
-              {categories.map((cat) => (
+              {categories.map((category) => (
                 <TouchableOpacity
-                  key={cat}
-                  onPress={() => updateField('category', cat)}
+                  key={category}
                   style={[
                     styles.categoryOption,
-                    formData.category === cat && styles.categoryOptionActive,
+                    formData.category === category && styles.categoryOptionActive,
                   ]}
+                  onPress={() => updateField('category', category)}
                 >
-                  <BodyText
+                  <Text
                     style={[
                       styles.categoryText,
-                      formData.category === cat && styles.categoryTextActive,
+                      formData.category === category && styles.categoryTextActive,
                     ]}
                   >
-                    {cat.toUpperCase()}
-                  </BodyText>
+                    {category}
+                  </Text>
                 </TouchableOpacity>
               ))}
             </View>
+            {errors.category && <Text style={styles.errorText}>{errors.category}</Text>}
           </View>
 
-          {/* Pricing */}
-          <Input
-            label="PRICE"
-            placeholder="25000"
-            value={formData.price}
-            onChangeText={(text) => updateField('price', text)}
-            keyboardType="numeric"
-            error={errors.price}
-            helperText={`Currency: ${retailer?.currency || 'XAF'}`}
-          />
+          {/* Price */}
+          <View style={styles.section}>
+            <Text style={styles.sectionLabel}>Price (XAF) *</Text>
+            <TextInput
+              style={[styles.textInput, errors.price && styles.inputError]}
+              value={formData.price}
+              onChangeText={(text) => updateField('price', text)}
+              placeholder="0"
+              placeholderTextColor={colors.text.secondary}
+              keyboardType="numeric"
+            />
+            {errors.price && <Text style={styles.errorText}>{errors.price}</Text>}
+          </View>
 
-          {/* Inventory */}
-          <Input
-            label="STOCK QUANTITY"
-            placeholder="50"
-            value={formData.stockQuantity}
-            onChangeText={(text) => updateField('stockQuantity', text)}
-            keyboardType="numeric"
-            error={errors.stockQuantity}
-          />
+          {/* Stock Quantity */}
+          <View style={styles.section}>
+            <Text style={styles.sectionLabel}>Stock Quantity *</Text>
+            <TextInput
+              style={[styles.textInput, errors.stockQuantity && styles.inputError]}
+              value={formData.stockQuantity}
+              onChangeText={(text) => updateField('stockQuantity', text)}
+              placeholder="0"
+              placeholderTextColor={colors.text.secondary}
+              keyboardType="numeric"
+            />
+            {errors.stockQuantity && <Text style={styles.errorText}>{errors.stockQuantity}</Text>}
+          </View>
 
-          <Input
-            label="LOW STOCK THRESHOLD"
-            placeholder="10"
-            value={formData.lowStockThreshold}
-            onChangeText={(text) => updateField('lowStockThreshold', text)}
-            keyboardType="numeric"
-            error={errors.lowStockThreshold}
-            helperText="Alert when stock falls below this number"
-          />
+          {/* Low Stock Threshold */}
+          <View style={styles.section}>
+            <Text style={styles.sectionLabel}>Low Stock Alert Threshold</Text>
+            <TextInput
+              style={styles.textInput}
+              value={formData.lowStockThreshold}
+              onChangeText={(text) => updateField('lowStockThreshold', text)}
+              placeholder="10"
+              placeholderTextColor={colors.text.secondary}
+              keyboardType="numeric"
+            />
+            <Text style={styles.helperText}>
+              Get notified when stock falls below this number
+            </Text>
+          </View>
 
-          {/* Optional Fields */}
-          <Input
-            label="SKU (OPTIONAL)"
-            placeholder="DRESS-RED-001"
-            value={formData.sku}
-            onChangeText={(text) => updateField('sku', text)}
-            autoCapitalize="characters"
-          />
+          {/* SKU */}
+          <View style={styles.section}>
+            <Text style={styles.sectionLabel}>SKU (Optional)</Text>
+            <TextInput
+              style={styles.textInput}
+              value={formData.sku}
+              onChangeText={(text) => updateField('sku', text)}
+              placeholder="e.g., BFD-001"
+              placeholderTextColor={colors.text.secondary}
+            />
+          </View>
 
-          <Input
-            label="SIZES (OPTIONAL)"
-            placeholder="S, M, L, XL"
-            value={formData.sizes}
-            onChangeText={(text) => updateField('sizes', text)}
-            helperText="Separate with commas"
-          />
+          {/* Sizes */}
+          <View style={styles.section}>
+            <Text style={styles.sectionLabel}>Available Sizes</Text>
+            <TextInput
+              style={styles.textInput}
+              value={formData.sizes}
+              onChangeText={(text) => updateField('sizes', text)}
+              placeholder="e.g., S, M, L, XL"
+              placeholderTextColor={colors.text.secondary}
+            />
+            <Text style={styles.helperText}>
+              Separate with commas
+            </Text>
+          </View>
 
-          <Input
-            label="COLORS (OPTIONAL)"
-            placeholder="Red, Blue, Green"
-            value={formData.colors}
-            onChangeText={(text) => updateField('colors', text)}
-            helperText="Separate with commas"
-          />
+          {/* Colors */}
+          <View style={styles.section}>
+            <Text style={styles.sectionLabel}>Available Colors</Text>
+            <TextInput
+              style={styles.textInput}
+              value={formData.colors}
+              onChangeText={(text) => updateField('colors', text)}
+              placeholder="e.g., Blue, Red, Green"
+              placeholderTextColor={colors.text.secondary}
+            />
+            <Text style={styles.helperText}>
+              Separate with commas
+            </Text>
+          </View>
 
           {/* Actions */}
           <View style={styles.actions}>
-            <Button
-              variant="outline"
+            <TouchableOpacity
+              style={[styles.actionButtonStyle, styles.cancelButton]}
               onPress={() => router.back()}
-              style={styles.actionButton}
             >
-              CANCEL
-            </Button>
-            <Button
-              variant="primary"
+              <Text style={styles.cancelButtonText}>Cancel</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.actionButtonStyle, styles.submitButton]}
               onPress={handleSubmit}
-              loading={loading}
               disabled={loading}
-              style={styles.actionButton}
             >
-              ADD PRODUCT
-            </Button>
+              <Text style={styles.submitButtonText}>
+                {loading ? 'Adding...' : 'Add Product'}
+              </Text>
+            </TouchableOpacity>
           </View>
-        </Card>
+        </View>
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -341,29 +372,42 @@ export default function AddProductScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.ivory,
+    backgroundColor: colors.primary.cream,
   },
   scrollContent: {
-    padding: spacing[6],
+    padding: spacing.xl,
   },
   card: {
-    gap: spacing[4],
+    backgroundColor: colors.neutral.white,
+    borderRadius: 16,
+    padding: spacing.lg,
   },
   title: {
-    marginBottom: spacing[2],
+    fontSize: 24,
+    fontWeight: '700',
+    color: colors.text.primary,
+    marginBottom: spacing.md,
   },
   section: {
-    marginBottom: spacing[4],
+    marginBottom: spacing.lg,
+  },
+  sectionLabel: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: colors.text.primary,
+    marginBottom: spacing.xs,
   },
   helperText: {
     fontSize: 12,
-    color: colors.text.muted,
-    marginTop: spacing[1],
+    color: colors.text.secondary,
+    marginTop: spacing.xs,
+    lineHeight: 18,
   },
   imagesContainer: {
     flexDirection: 'row',
-    gap: spacing[3],
-    paddingVertical: spacing[2],
+    gap: spacing.md,
+    paddingVertical: spacing.sm,
+    marginBottom: spacing.sm,
   },
   imageWrapper: {
     position: 'relative',
@@ -371,9 +415,9 @@ const styles = StyleSheet.create({
   image: {
     width: 100,
     height: 100,
-    borderRadius: borderRadius.md,
-    borderWidth: 2,
-    borderColor: colors.black,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: colors.border.primary,
   },
   removeButton: {
     position: 'absolute',
@@ -383,67 +427,119 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     borderRadius: 12,
-    borderWidth: 2,
-    borderColor: colors.black,
+    borderWidth: 1,
+    borderColor: colors.border.primary,
     justifyContent: 'center',
     alignItems: 'center',
   },
   removeButtonText: {
-    color: colors.white,
+    color: colors.neutral.white,
     fontSize: 12,
     fontWeight: 'bold',
   },
   addImageButton: {
-    width: 100,
-    height: 100,
-    borderRadius: borderRadius.md,
+    width: '100%',
+    padding: spacing.lg,
+    borderRadius: 12,
     borderWidth: 2,
-    borderColor: colors.black,
+    borderColor: colors.border.primary,
     borderStyle: 'dashed',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: colors.gray[100],
+    backgroundColor: colors.primary.beige,
+    marginTop: spacing.sm,
+    flexDirection: 'row',
+    gap: spacing.sm,
   },
   addImageText: {
-    color: colors.text.muted,
-    fontSize: 12,
+    color: colors.primary.green,
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  textInput: {
+    backgroundColor: colors.neutral.white,
+    borderWidth: 1,
+    borderColor: colors.border.primary,
+    borderRadius: 12,
+    padding: spacing.md,
+    fontSize: 15,
+    color: colors.text.primary,
+  },
+  textArea: {
+    minHeight: 100,
+    textAlignVertical: 'top',
+  },
+  inputError: {
+    borderColor: colors.status.error,
+    borderWidth: 2,
   },
   categoryGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: spacing[2],
-    marginTop: spacing[2],
+    gap: spacing.sm,
+    marginTop: spacing.sm,
   },
   categoryOption: {
-    paddingVertical: spacing[2],
-    paddingHorizontal: spacing[4],
-    borderRadius: borderRadius.base,
-    borderWidth: 2,
-    borderColor: colors.black,
-    backgroundColor: colors.white,
+    paddingVertical: spacing.xs,
+    paddingHorizontal: spacing.md,
+    borderRadius: 50,
+    borderWidth: 1,
+    borderColor: colors.border.primary,
+    backgroundColor: colors.neutral.white,
   },
   categoryOptionActive: {
-    backgroundColor: colors.safetyOrange,
+    backgroundColor: colors.primary.green,
+    borderColor: colors.primary.green,
   },
   categoryText: {
     fontSize: 12,
     fontWeight: '600',
-    color: colors.black,
+    color: colors.text.primary,
   },
   categoryTextActive: {
-    color: colors.white,
+    color: colors.neutral.white,
   },
   errorText: {
     color: colors.status.error,
     fontSize: 12,
-    marginTop: spacing[1],
+    marginTop: spacing.xs,
   },
   actions: {
     flexDirection: 'row',
-    gap: spacing[3],
-    marginTop: spacing[4],
+    gap: spacing.md,
+    marginTop: spacing.lg,
   },
   actionButton: {
     flex: 1,
+  },
+  actionButtonStyle: {
+    flex: 1,
+    padding: spacing.md,
+    borderRadius: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  cancelButton: {
+    backgroundColor: colors.neutral.white,
+    borderWidth: 1,
+    borderColor: colors.border.primary,
+  },
+  cancelButtonText: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: colors.text.primary,
+  },
+  submitButton: {
+    backgroundColor: colors.primary.green,
+    shadowColor: 'rgba(46, 204, 113, 0.3)',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 1,
+    shadowRadius: 12,
+    elevation: 4,
+  },
+  submitButtonText: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: colors.neutral.white,
   },
 });

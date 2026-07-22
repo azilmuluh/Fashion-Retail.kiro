@@ -40,8 +40,8 @@ export const Button: React.FC<ButtonProps> = ({
       alignItems: 'center',
       justifyContent: 'center',
       flexDirection: 'row',
-      cursor: Platform.OS === 'web' ? 'pointer' : undefined,
-      transition: Platform.OS === 'web' ? 'all 0.3s ease' : undefined,
+      // cursor: Platform.OS === 'web' ? 'pointer' : undefined, // Not supported in React Native StyleSheet
+      // transition: Platform.OS === 'web' ? 'all 0.3s ease' : undefined, // Not supported in React Native
       shadowColor: 'rgba(0, 0, 0, 0.1)',
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 1,

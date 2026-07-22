@@ -16,8 +16,12 @@ import {
   Users,
   AlertTriangle,
   XCircle,
+  FolderOpen,
+  ClipboardList,
+  UserCheck,
 } from 'lucide-react-native';
 import { colors, spacing, typography } from '@fashion-retail/design-system';
+import AIChatAssistant from '../../components/AIChatAssistant';
 
 interface AnalyticsData {
   // Inventory
@@ -197,12 +201,18 @@ export default function DashboardScreen() {
             <Text style={styles.metricLabel}>TOTAL PRODUCTS</Text>
           </View>
           <View style={[styles.metricCard, analytics?.lowStockProducts && styles.warningMetric]}>
-            <Text style={styles.metricValue}>{analytics?.lowStockProducts || 0}</Text>
-            <Text style={styles.metricLabel}>LOW STOCK ⚠️</Text>
+            <View style={styles.iconAndValue}>
+              <AlertTriangle size={20} color={colors.status.warning} />
+              <Text style={styles.metricValue}>{analytics?.lowStockProducts || 0}</Text>
+            </View>
+            <Text style={styles.metricLabel}>LOW STOCK</Text>
           </View>
           <View style={[styles.metricCard, analytics?.outOfStockProducts && styles.dangerMetric]}>
-            <Text style={styles.metricValue}>{analytics?.outOfStockProducts || 0}</Text>
-            <Text style={styles.metricLabel}>OUT OF STOCK 🚫</Text>
+            <View style={styles.iconAndValue}>
+              <XCircle size={20} color={colors.status.error} />
+              <Text style={styles.metricValue}>{analytics?.outOfStockProducts || 0}</Text>
+            </View>
+            <Text style={styles.metricLabel}>OUT OF STOCK</Text>
           </View>
           <View style={[styles.metricCard, styles.fullWidth]}>
             <Text style={styles.metricValue}>
@@ -216,7 +226,10 @@ export default function DashboardScreen() {
       {/* Category Breakdown */}
       {analytics?.categoryBreakdown && Object.keys(analytics.categoryBreakdown).length > 0 && (
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>📂 PRODUCTS BY CATEGORY</Text>
+          <View style={styles.sectionHeader}>
+            <FolderOpen size={20} color={colors.text.primary} />
+            <Text style={styles.sectionTitle}>PRODUCTS BY CATEGORY</Text>
+          </View>
           <View style={styles.categoryList}>
             {Object.entries(analytics.categoryBreakdown)
               .sort(([, a], [, b]) => b - a)
@@ -246,7 +259,10 @@ export default function DashboardScreen() {
 
       {/* Orders Status */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>📋 ORDERS STATUS</Text>
+        <View style={styles.sectionHeader}>
+          <ClipboardList size={20} color={colors.text.primary} />
+          <Text style={styles.sectionTitle}>ORDERS STATUS</Text>
+        </View>
         <View style={styles.metricsGrid}>
           <View style={styles.metricCard}>
             <Text style={styles.metricValue}>{analytics?.pendingOrders || 0}</Text>
@@ -263,7 +279,10 @@ export default function DashboardScreen() {
 
       {/* Customers */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>👥 CUSTOMERS</Text>
+        <View style={styles.sectionHeader}>
+          <UserCheck size={20} color={colors.text.primary} />
+          <Text style={styles.sectionTitle}>CUSTOMERS</Text>
+        </View>
         <View style={styles.metricsGrid}>
           <View style={styles.metricCard}>
             <Text style={styles.metricValue}>{analytics?.totalCustomers || 0}</Text>
@@ -275,6 +294,9 @@ export default function DashboardScreen() {
           </View>
         </View>
       </View>
+
+      {/* AI Chat Assistant */}
+      <AIChatAssistant />
     </ScrollView>
   );
 }
@@ -378,6 +400,12 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: '800',
     color: colors.text.primary,
+    marginBottom: spacing.xs,
+  },
+  iconAndValue: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
     marginBottom: spacing.xs,
   },
   metricLabel: {

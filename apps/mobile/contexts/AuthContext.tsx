@@ -92,18 +92,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   ) {
     try {
-      const { error } = await supabase.auth.signUp({
+      console.log('AuthContext signUp called with:', {
+        email,
+        password: '***',
+        metadata,
+      });
+      
+      console.log('Calling supabase.auth.signUp...');
+      const result = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: metadata,
         },
       });
+      
+      console.log('Supabase signUp result:', {
+        error: result.error,
+        data: result.data,
+      });
 
-      if (error) throw error;
+      if (result.error) throw result.error;
       return { error: null };
     } catch (error) {
-      console.error('Sign up error:', error);
+      console.error('Sign up error in AuthContext:', error);
       return { error: error as Error };
     }
   }

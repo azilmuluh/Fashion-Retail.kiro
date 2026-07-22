@@ -2,6 +2,35 @@
 
 A comprehensive retail management platform designed to solve customer engagement, inventory management, and loyalty challenges for fashion retailers in Cameroon.
 
+## 🚀 Quick Start - Run the App
+
+**See [HOW_TO_RUN.md](./HOW_TO_RUN.md) for complete setup and run instructions.**
+
+```bash
+# Install dependencies
+npm install
+
+# Run web app (recommended)
+cd apps/mobile
+npx expo start --web --port 8085
+
+# Test credentials
+# Email: azilmuluh@gmail.com
+# Password: Test1234!
+```
+
+### ✨ Recent Updates
+
+**HopeRise Design System** - Complete UI refresh with:
+- Soft cream/beige/green color palette
+- Lucide React Native icons (replaced all emojis)
+- Smooth animations throughout
+- AI Assistant with chat interface
+- Image Scanner for multi-product recognition
+- Functional order status filters
+
+---
+
 ## 🎯 Problem Statement
 
 Fashion retailers in Cameroon face several critical challenges:

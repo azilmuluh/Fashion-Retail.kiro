@@ -9,10 +9,23 @@ import {
   Alert,
   Switch,
   ActivityIndicator,
+  Animated,
 } from 'react-native';
+import { 
+  User, 
+  Mail, 
+  Phone, 
+  MessageCircle, 
+  Gift, 
+  Save, 
+  LogOut,
+  Zap,
+  Star,
+  Award,
+} from 'lucide-react-native';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
-import { colors, spacing, typography } from '@fashion-retail/design-system';
+import { colors, spacing } from '@fashion-retail/design-system';
 
 export default function ProfileScreen() {
   const { retailer, signOut } = useAuth();
@@ -122,130 +135,185 @@ export default function ProfileScreen() {
   if (loading) {
     return (
       <View style={styles.centerContainer}>
-        <ActivityIndicator size="large" color={colors.primary.orange} />
+        <ActivityIndicator size="large" color={colors.primary.green} />
+        <Text style={styles.loadingText}>Loading profile...</Text>
       </View>
     );
   }
 
+  const fadeAnim = new Animated.Value(0);
+  Animated.timing(fadeAnim, {
+    toValue: 1,
+    duration: 400,
+    useNativeDriver: true,
+  }).start();
+
   return (
     <ScrollView style={styles.container}>
-      {/* Profile Info */}
-      <View style={styles.card}>
-        <Text style={styles.sectionTitle}>PROFILE</Text>
-        <View style={styles.infoRow}>
-          <Text style={styles.infoLabel}>Business Name:</Text>
-          <Text style={styles.infoValue}>{retailer?.business_name}</Text>
-        </View>
-        <View style={styles.infoRow}>
-          <Text style={styles.infoLabel}>Email:</Text>
-          <Text style={styles.infoValue}>{retailer?.email}</Text>
-        </View>
-        <View style={styles.infoRow}>
-          <Text style={styles.infoLabel}>Phone:</Text>
-          <Text style={styles.infoValue}>{retailer?.phone_number}</Text>
-        </View>
-        <View style={styles.infoRow}>
-          <Text style={styles.infoLabel}>WhatsApp:</Text>
-          <Text style={styles.infoValue}>{retailer?.whatsapp_number}</Text>
-        </View>
-      </View>
-
-      {/* Loyalty Program Settings */}
-      <View style={styles.card}>
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>🎁 LOYALTY PROGRAM</Text>
-          <View style={styles.switchContainer}>
-            <Text style={styles.switchLabel}>Active</Text>
-            <Switch
-              value={isActive}
-              onValueChange={setIsActive}
-              trackColor={{ false: colors.neutral.gray, true: colors.primary.orange }}
-              thumbColor={colors.neutral.white}
-            />
+      <Animated.View style={{ opacity: fadeAnim }}>
+        {/* Profile Info */}
+        <View style={styles.card}>
+          <View style={styles.cardHeader}>
+            <User size={20} color={colors.primary.green} />
+            <Text style={styles.sectionTitle}>Profile</Text>
+          </View>
+          
+          <View style={styles.infoRow}>
+            <View style={styles.infoLabelRow}>
+              <User size={16} color={colors.text.secondary} />
+              <Text style={styles.infoLabel}>Business Name</Text>
+            </View>
+            <Text style={styles.infoValue}>{retailer?.business_name}</Text>
+          </View>
+          
+          <View style={styles.infoRow}>
+            <View style={styles.infoLabelRow}>
+              <Mail size={16} color={colors.text.secondary} />
+              <Text style={styles.infoLabel}>Email</Text>
+            </View>
+            <Text style={styles.infoValue}>{retailer?.email}</Text>
+          </View>
+          
+          <View style={styles.infoRow}>
+            <View style={styles.infoLabelRow}>
+              <Phone size={16} color={colors.text.secondary} />
+              <Text style={styles.infoLabel}>Phone</Text>
+            </View>
+            <Text style={styles.infoValue}>{retailer?.phone_number}</Text>
+          </View>
+          
+          <View style={styles.infoRow}>
+            <View style={styles.infoLabelRow}>
+              <MessageCircle size={16} color={colors.text.secondary} />
+              <Text style={styles.infoLabel}>WhatsApp</Text>
+            </View>
+            <Text style={styles.infoValue}>{retailer?.whatsapp_number}</Text>
           </View>
         </View>
 
-        <View style={styles.formGroup}>
-          <Text style={styles.formLabel}>Program Name</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="e.g. VIP Rewards"
-            placeholderTextColor={colors.neutral.gray}
-            value={programName}
-            onChangeText={setProgramName}
-          />
+        {/* Loyalty Program Settings */}
+        <View style={styles.card}>
+          <View style={styles.cardHeader}>
+            <Gift size={20} color={colors.primary.green} />
+            <Text style={styles.sectionTitle}>Loyalty Program</Text>
+            <View style={styles.switchContainer}>
+              <Text style={styles.switchLabel}>Active</Text>
+              <Switch
+                value={isActive}
+                onValueChange={setIsActive}
+                trackColor={{ false: colors.border.primary, true: colors.primary.green }}
+                thumbColor={colors.neutral.white}
+                ios_backgroundColor={colors.border.primary}
+              />
+            </View>
+          </View>
+
+          <View style={styles.formGroup}>
+            <Text style={styles.formLabel}>Program Name</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="e.g. VIP Rewards"
+              placeholderTextColor={colors.text.secondary}
+              value={programName}
+              onChangeText={setProgramName}
+            />
+          </View>
+
+          <View style={styles.formGroup}>
+            <Text style={styles.formLabel}>Points Per 1 XAF Spent</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="0.1"
+              placeholderTextColor={colors.text.secondary}
+              value={pointsPerPurchase}
+              onChangeText={setPointsPerPurchase}
+              keyboardType="decimal-pad"
+            />
+            <Text style={styles.helpText}>
+              Example: 0.1 means customer earns 10 points per 100 XAF spent
+            </Text>
+          </View>
+
+          <View style={styles.formGroup}>
+            <Text style={styles.formLabel}>Minimum Purchase Amount (XAF)</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="0"
+              placeholderTextColor={colors.text.secondary}
+              value={minimumPurchase}
+              onChangeText={setMinimumPurchase}
+              keyboardType="number-pad"
+            />
+            <Text style={styles.helpText}>Minimum order amount to earn points</Text>
+          </View>
+
+          <View style={styles.formGroup}>
+            <Text style={styles.formLabel}>Minimum Points to Redeem</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="100"
+              placeholderTextColor={colors.text.secondary}
+              value={minimumRedemption}
+              onChangeText={setMinimumRedemption}
+              keyboardType="number-pad"
+            />
+            <Text style={styles.helpText}>Minimum points required for redemption</Text>
+          </View>
+
+          <TouchableOpacity
+            style={[styles.saveButton, saving && styles.saveButtonDisabled]}
+            onPress={saveLoyaltyProgram}
+            disabled={saving}
+            activeOpacity={0.8}
+          >
+            <Save size={20} color={colors.neutral.white} />
+            <Text style={styles.saveButtonText}>
+              {saving ? 'Saving...' : 'Save Settings'}
+            </Text>
+          </TouchableOpacity>
         </View>
 
-        <View style={styles.formGroup}>
-          <Text style={styles.formLabel}>Points Per 1 XAF Spent</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="0.1"
-            placeholderTextColor={colors.neutral.gray}
-            value={pointsPerPurchase}
-            onChangeText={setPointsPerPurchase}
-            keyboardType="decimal-pad"
-          />
+        {/* Redemption Guide */}
+        <View style={styles.card}>
+          <View style={styles.cardHeader}>
+            <Zap size={20} color={colors.primary.green} />
+            <Text style={styles.sectionTitle}>Redemption Guide</Text>
+          </View>
+          
           <Text style={styles.helpText}>
-            Example: 0.1 means customer earns 10 points per 100 XAF spent
+            Current redemption rates (shown to customers):
           </Text>
+          
+          <View style={styles.redemptionList}>
+            <View style={styles.redemptionItem}>
+              <Star size={14} color={colors.primary.green} />
+              <Text style={styles.redemptionItemText}>100 points = 1,000 XAF discount</Text>
+            </View>
+            <View style={styles.redemptionItem}>
+              <Star size={14} color={colors.primary.green} />
+              <Text style={styles.redemptionItemText}>200 points = 2,500 XAF discount</Text>
+            </View>
+            <View style={styles.redemptionItem}>
+              <Star size={14} color={colors.primary.green} />
+              <Text style={styles.redemptionItemText}>500 points = 7,500 XAF discount</Text>
+            </View>
+            <View style={styles.redemptionItem}>
+              <Award size={14} color={colors.primary.green} />
+              <Text style={styles.redemptionItemText}>1000 points = 20,000 XAF discount</Text>
+            </View>
+          </View>
         </View>
 
-        <View style={styles.formGroup}>
-          <Text style={styles.formLabel}>Minimum Purchase Amount (XAF)</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="0"
-            placeholderTextColor={colors.neutral.gray}
-            value={minimumPurchase}
-            onChangeText={setMinimumPurchase}
-            keyboardType="number-pad"
-          />
-          <Text style={styles.helpText}>Minimum order amount to earn points</Text>
-        </View>
-
-        <View style={styles.formGroup}>
-          <Text style={styles.formLabel}>Minimum Points to Redeem</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="100"
-            placeholderTextColor={colors.neutral.gray}
-            value={minimumRedemption}
-            onChangeText={setMinimumRedemption}
-            keyboardType="number-pad"
-          />
-          <Text style={styles.helpText}>Minimum points required for redemption</Text>
-        </View>
-
-        <TouchableOpacity
-          style={[styles.saveButton, saving && styles.saveButtonDisabled]}
-          onPress={saveLoyaltyProgram}
-          disabled={saving}
+        {/* Sign Out */}
+        <TouchableOpacity 
+          style={styles.signOutButton} 
+          onPress={handleSignOut}
+          activeOpacity={0.8}
         >
-          <Text style={styles.saveButtonText}>
-            {saving ? 'SAVING...' : 'SAVE SETTINGS'}
-          </Text>
+          <LogOut size={20} color={colors.neutral.white} />
+          <Text style={styles.signOutButtonText}>Sign Out</Text>
         </TouchableOpacity>
-      </View>
-
-      {/* Redemption Guide */}
-      <View style={styles.card}>
-        <Text style={styles.sectionTitle}>💎 REDEMPTION GUIDE</Text>
-        <Text style={styles.helpText}>
-          Current redemption rates (shown to customers):
-        </Text>
-        <View style={styles.redemptionList}>
-          <Text style={styles.redemptionItem}>• 100 points = 1,000 XAF discount</Text>
-          <Text style={styles.redemptionItem}>• 200 points = 2,500 XAF discount</Text>
-          <Text style={styles.redemptionItem}>• 500 points = 7,500 XAF discount</Text>
-          <Text style={styles.redemptionItem}>• 1000 points = 20,000 XAF discount</Text>
-        </View>
-      </View>
-
-      {/* Sign Out */}
-      <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
-        <Text style={styles.signOutButtonText}>SIGN OUT</Text>
-      </TouchableOpacity>
+      </Animated.View>
     </ScrollView>
   );
 }
@@ -253,128 +321,171 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.neutral.ivory,
+    backgroundColor: colors.primary.cream,
   },
   centerContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: colors.neutral.ivory,
+    backgroundColor: colors.primary.cream,
+  },
+  loadingText: {
+    marginTop: spacing.md,
+    fontSize: 14,
+    color: colors.text.secondary,
+    fontWeight: '500',
   },
   card: {
     backgroundColor: colors.neutral.white,
-    borderWidth: 4,
-    borderColor: colors.primary.black,
-    margin: spacing.md,
-    padding: spacing.md,
-    shadowColor: colors.primary.black,
-    shadowOffset: { width: 6, height: 6 },
+    borderWidth: 1,
+    borderColor: colors.border.primary,
+    borderRadius: 16,
+    margin: spacing.lg,
+    padding: spacing.lg,
+    shadowColor: 'rgba(0, 0, 0, 0.08)',
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 1,
-    shadowRadius: 0,
-    elevation: 6,
+    shadowRadius: 12,
+    elevation: 3,
   },
-  sectionHeader: {
+  cardHeader: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: spacing.md,
-    paddingBottom: spacing.sm,
-    borderBottomWidth: 3,
-    borderBottomColor: colors.primary.black,
+    gap: spacing.sm,
+    marginBottom: spacing.lg,
+    paddingBottom: spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border.primary,
   },
   sectionTitle: {
-    fontSize: typography.sizes.md,
-    fontWeight: '800',
-    color: colors.primary.black,
+    fontSize: 18,
+    fontWeight: '700',
+    color: colors.text.primary,
+    flex: 1,
   },
   switchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.sm,
+    gap: spacing.xs,
   },
   switchLabel: {
-    fontSize: typography.sizes.sm,
-    fontWeight: '700',
-    color: colors.primary.black,
+    fontSize: 13,
+    fontWeight: '600',
+    color: colors.text.secondary,
   },
   infoRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: spacing.sm,
+    alignItems: 'center',
+    marginBottom: spacing.md,
+    paddingBottom: spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.primary.cream,
+  },
+  infoLabelRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
   },
   infoLabel: {
-    fontSize: typography.sizes.sm,
-    fontWeight: '700',
-    color: colors.neutral.gray,
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.text.secondary,
   },
   infoValue: {
-    fontSize: typography.sizes.sm,
-    fontWeight: '700',
-    color: colors.primary.black,
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.text.primary,
     flex: 1,
     textAlign: 'right',
   },
   formGroup: {
-    marginBottom: spacing.md,
+    marginBottom: spacing.lg,
   },
   formLabel: {
-    fontSize: typography.sizes.sm,
-    fontWeight: '800',
-    color: colors.primary.black,
-    marginBottom: spacing.xs,
+    fontSize: 13,
+    fontWeight: '700',
+    color: colors.text.primary,
+    marginBottom: spacing.sm,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   input: {
-    backgroundColor: colors.neutral.ivory,
-    borderWidth: 3,
-    borderColor: colors.primary.black,
+    backgroundColor: colors.primary.cream,
+    borderWidth: 1,
+    borderColor: colors.border.primary,
+    borderRadius: 12,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
-    fontSize: typography.sizes.md,
-    fontWeight: '600',
-    color: colors.primary.black,
+    fontSize: 15,
+    fontWeight: '500',
+    color: colors.text.primary,
   },
   helpText: {
-    fontSize: typography.sizes.xs,
-    fontWeight: '600',
-    color: colors.neutral.gray,
+    fontSize: 12,
+    fontWeight: '500',
+    color: colors.text.secondary,
     marginTop: spacing.xs,
+    lineHeight: 16,
   },
   saveButton: {
-    backgroundColor: colors.primary.orange,
-    borderWidth: 3,
-    borderColor: colors.primary.black,
+    backgroundColor: colors.primary.green,
+    borderRadius: 50,
     padding: spacing.md,
+    flexDirection: 'row',
     alignItems: 'center',
-    marginTop: spacing.sm,
+    justifyContent: 'center',
+    gap: spacing.xs,
+    marginTop: spacing.md,
+    shadowColor: 'rgba(46, 204, 113, 0.3)',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 1,
+    shadowRadius: 12,
+    elevation: 4,
   },
   saveButtonDisabled: {
     opacity: 0.6,
   },
   saveButtonText: {
-    fontSize: typography.sizes.md,
-    fontWeight: '800',
+    fontSize: 15,
+    fontWeight: '700',
     color: colors.neutral.white,
   },
   redemptionList: {
-    marginTop: spacing.sm,
-    gap: spacing.xs,
+    marginTop: spacing.md,
+    gap: spacing.sm,
   },
   redemptionItem: {
-    fontSize: typography.sizes.sm,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    backgroundColor: colors.accent.light,
+    padding: spacing.sm,
+    borderRadius: 8,
+  },
+  redemptionItemText: {
+    fontSize: 14,
     fontWeight: '600',
-    color: colors.primary.black,
+    color: colors.text.primary,
   },
   signOutButton: {
-    backgroundColor: '#F44336',
-    borderWidth: 3,
-    borderColor: colors.primary.black,
-    margin: spacing.md,
+    backgroundColor: colors.status.error,
+    borderRadius: 50,
+    margin: spacing.lg,
     padding: spacing.md,
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.xs,
+    shadowColor: 'rgba(231, 76, 60, 0.3)',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 1,
+    shadowRadius: 12,
+    elevation: 4,
   },
   signOutButtonText: {
-    fontSize: typography.sizes.md,
-    fontWeight: '800',
+    fontSize: 15,
+    fontWeight: '700',
     color: colors.neutral.white,
   },
 });

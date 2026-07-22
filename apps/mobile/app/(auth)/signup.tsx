@@ -90,41 +90,56 @@ export default function SignupScreen() {
   }
 
   async function handleSignup() {
+    console.log('=== SIGNUP DEBUG START ===');
     console.log('handleSignup called');
+    console.log('Form data:', formData);
+    
     if (!validate()) {
-      console.log('Validation failed');
+      console.log('Validation failed, errors:', errors);
       return;
     }
 
-    console.log('Starting signup process...', {
-      email: formData.email,
-      business_name: formData.businessName,
-    });
+    console.log('Validation passed!');
+    console.log('Starting signup process...');
+    console.log('Email:', formData.email);
+    console.log('Business name:', formData.businessName);
+    console.log('Phone:', normalizePhoneNumber(formData.phoneNumber));
+    console.log('WhatsApp:', normalizePhoneNumber(formData.whatsappNumber));
 
     setLoading(true);
-    const { error } = await signUp(
-      formData.email,
-      formData.password,
-      {
-        business_name: formData.businessName,
-        phone_number: normalizePhoneNumber(formData.phoneNumber),
-        whatsapp_number: normalizePhoneNumber(formData.whatsappNumber),
-      }
-    );
-    setLoading(false);
-
-    console.log('Signup result:', { error });
-
-    if (error) {
-      console.error('Signup error:', error);
-      Alert.alert('Signup Failed', error.message);
-    } else {
-      console.log('Signup successful!');
-      Alert.alert(
-        'Success!',
-        'Account created successfully. Please check your email to verify your account.',
-        [{ text: 'OK', onPress: () => router.replace('/(auth)/login') }]
+    
+    try {
+      const { error } = await signUp(
+        formData.email,
+        formData.password,
+        {
+          business_name: formData.businessName,
+          phone_number: normalizePhoneNumber(formData.phoneNumber),
+          whatsapp_number: normalizePhoneNumber(formData.whatsappNumber),
+        }
       );
+      
+      console.log('Signup completed');
+      console.log('Error:', error);
+
+      if (error) {
+        console.error('Signup error details:', {
+          message: error.message,
+          name: error.name,
+          stack: error.stack,
+        });
+        Alert.alert('Signup Failed', error.message || 'An unknown error occurred');
+      } else {
+        console.log('Signup successful! No errors.');
+        // Redirect immediately to dashboard
+        router.replace('/(tabs)');
+      }
+    } catch (err) {
+      console.error('Unexpected error during signup:', err);
+      Alert.alert('Error', 'An unexpected error occurred. Please try again.');
+    } finally {
+      setLoading(false);
+      console.log('=== SIGNUP DEBUG END ===');
     }
   }
 

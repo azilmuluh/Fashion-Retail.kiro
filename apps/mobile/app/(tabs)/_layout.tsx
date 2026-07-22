@@ -1,73 +1,112 @@
 /**
  * Tabs Layout
- * Main app navigation
+ * Main app navigation with HopeRise design
  */
 
 import { Tabs } from 'expo-router';
+import { LayoutDashboard, Package, ShoppingBag, Users, User, MessageCircle } from 'lucide-react-native';
 import { colors } from '@fashion-retail/design-system';
 
 export default function TabsLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: colors.safetyOrange,
-        tabBarInactiveTintColor: colors.gray[600],
-        tabBarStyle: {
-          backgroundColor: colors.white,
-          borderTopWidth: 2,
-          borderTopColor: colors.black,
-        },
-        headerStyle: {
-          backgroundColor: colors.ivory,
-          borderBottomWidth: 2,
-          borderBottomColor: colors.black,
-        },
-        headerTintColor: colors.black,
-        headerTitleStyle: {
-          fontWeight: 'bold',
-          textTransform: 'uppercase',
-          letterSpacing: 1,
-        },
-      }}
-    >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'DASHBOARD',
-          tabBarLabel: 'Dashboard',
+          tabBarActiveTintColor: colors.primary.green,
+          tabBarInactiveTintColor: colors.text.secondary,
+          tabBarStyle: {
+            backgroundColor: colors.neutral.white,
+            borderTopWidth: 1,
+            borderTopColor: colors.border.primary,
+            height: 60,
+            paddingBottom: 8,
+            paddingTop: 8,
+            shadowColor: 'rgba(0, 0, 0, 0.1)',
+            shadowOffset: { width: 0, height: -2 },
+            shadowOpacity: 1,
+            shadowRadius: 8,
+            elevation: 8,
+          },
+          tabBarLabelStyle: {
+            fontSize: 12,
+            fontWeight: '600',
+          },
+          headerStyle: {
+            backgroundColor: colors.primary.cream,
+            borderBottomWidth: 1,
+            borderBottomColor: colors.border.primary,
+            elevation: 0,
+            shadowOpacity: 0,
+          },
+          headerTintColor: colors.text.primary,
+          headerTitleStyle: {
+            fontWeight: '700',
+            fontSize: 18,
+          },
         }}
-      />
-      <Tabs.Screen
-        name="products"
-        options={{
-          title: 'PRODUCTS',
-          tabBarLabel: 'Products',
-          headerShown: false,
-        }}
-      />
-      <Tabs.Screen
-        name="orders"
-        options={{
-          title: 'ORDERS',
-          tabBarLabel: 'Orders',
-          headerShown: false,
-        }}
-      />
-      <Tabs.Screen
-        name="customers"
-        options={{
-          title: 'CUSTOMERS',
-          tabBarLabel: 'Customers',
-          headerShown: false,
-        }}
-      />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          title: 'PROFILE',
-          tabBarLabel: 'Profile',
-        }}
-      />
-    </Tabs>
+      >
+        <Tabs.Screen
+          name="index"
+          options={{
+            title: 'Dashboard',
+            tabBarLabel: 'Dashboard',
+            tabBarIcon: ({ color, size }) => (
+              <LayoutDashboard size={size} color={color} />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="products"
+          options={{
+            title: 'Products',
+            tabBarLabel: 'Products',
+            headerShown: false,
+            tabBarIcon: ({ color, size }) => (
+              <Package size={size} color={color} />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="whatsapp"
+          options={{
+            title: 'WhatsApp',
+            tabBarLabel: 'WhatsApp',
+            tabBarIcon: ({ color, size }) => (
+              <MessageCircle size={size} color={color} />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="orders"
+          options={{
+            title: 'Orders',
+            tabBarLabel: 'Orders',
+            headerShown: false,
+            tabBarIcon: ({ color, size }) => (
+              <ShoppingBag size={size} color={color} />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="customers"
+          options={{
+            title: 'Customers',
+            tabBarLabel: 'Customers',
+            headerShown: false,
+            tabBarIcon: ({ color, size }) => (
+              <Users size={size} color={color} />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="profile"
+          options={{
+            title: 'Profile',
+            tabBarLabel: 'Profile',
+            tabBarIcon: ({ color, size }) => (
+              <User size={size} color={color} />
+            ),
+          }}
+        />
+      </Tabs>
   );
 }

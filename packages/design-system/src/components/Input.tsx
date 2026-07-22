@@ -40,8 +40,8 @@ export const Input: React.FC<InputProps> = ({
         }}
         style={[
           styles.input,
-          isFocused && styles.inputFocused,
-          error && styles.inputError,
+          isFocused ? styles.inputFocused : null,
+          error ? styles.inputError : null,
           inputStyle,
         ]}
         placeholderTextColor={colors.text.muted}
@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: fontFamilies.body,
     color: colors.text.primary,
-    transition: 'all 0.3s ease',
+    // transition: 'all 0.3s ease', // Not supported in React Native
   },
   inputFocused: {
     borderColor: colors.primary.green,

@@ -44,9 +44,9 @@ export const ComponentShowcase: React.FC = () => {
           
           <View style={styles.colorGrid}>
             <View style={styles.colorItem}>
-              <View style={[styles.colorBox, { backgroundColor: colors.ivory }]} />
-              <Caption>IVORY (60%)</Caption>
-              <Caption>{colors.ivory}</Caption>
+              <View style={[styles.colorBox, { backgroundColor: colors.neutral.ivory }]} />
+              <Caption>CREAM (60%)</Caption>
+              <Caption>{colors.neutral.ivory}</Caption>
             </View>
             
             <View style={styles.colorItem}>
@@ -56,9 +56,9 @@ export const ComponentShowcase: React.FC = () => {
             </View>
             
             <View style={styles.colorItem}>
-              <View style={[styles.colorBox, { backgroundColor: colors.safetyOrange }]} />
-              <Caption>ORANGE (10%)</Caption>
-              <Caption>{colors.safetyOrange}</Caption>
+              <View style={[styles.colorBox, { backgroundColor: colors.primary.green }]} />
+              <Caption>GREEN (10%)</Caption>
+              <Caption>{colors.primary.green}</Caption>
             </View>
           </View>
         </Card>
@@ -290,7 +290,7 @@ function ProductCard() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.ivory,
+    backgroundColor: colors.primary.cream,
   },
   content: {
     padding: spacing[6],

@@ -13,22 +13,18 @@ import {
   Image,
   RefreshControl,
   Alert,
+  Animated,
+  Text,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import {
-  Button,
-  Card,
-  Badge,
-  Heading3,
-  BodyText,
-  Label,
-  colors,
-  spacing,
-  borderRadius,
-} from '@fashion-retail/design-system';
+import { Search, Package, Plus, AlertCircle, Tag } from 'lucide-react-native';
+// Temporarily disabled scanner due to import issues
+// import { ScanLine } from 'lucide-react-native';
+import { colors, spacing } from '@fashion-retail/design-system';
 import { supabase } from '../../../lib/supabase';
 import { useAuth } from '../../../contexts/AuthContext';
 import { Product, PRODUCT_CATEGORIES, formatCurrency } from '@fashion-retail/shared';
+// import ImageScanner from '../../../components/ImageScanner';
 
 export default function ProductsListScreen() {
   const router = useRouter();
@@ -40,6 +36,7 @@ export default function ProductsListScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  // const [scannerVisible, setScannerVisible] = useState(false);
 
   useEffect(() => {
     loadProducts();
@@ -118,17 +115,51 @@ export default function ProductsListScreen() {
     loadProducts();
   }
 
+  function handleProductsDetected(products: any[]) {
+    console.log('Detected products:', products);
+    Alert.alert(
+      'Products Detected',
+      `${products.length} product(s) detected! You can now add them to your inventory.`,
+      [
+        {
+          text: 'Add Later',
+          style: 'cancel',
+        },
+        {
+          text: 'Add Now',
+          onPress: () => {
+            // Navigate to add product page with detected products
+            router.push('/(tabs)/products/add');
+          },
+        },
+      ]
+    );
+  }
+
   function getStockStatus(product: Product): {
     label: string;
-    variant: 'success' | 'warning' | 'error';
+    color: string;
+    bgColor: string;
   } {
     if (product.stock_quantity === 0) {
-      return { label: 'OUT OF STOCK', variant: 'error' };
+      return { 
+        label: 'Out of Stock', 
+        color: colors.neutral.white,
+        bgColor: colors.status.error,
+      };
     }
     if (product.stock_quantity <= product.low_stock_threshold) {
-      return { label: 'LOW STOCK', variant: 'warning' };
+      return { 
+        label: 'Low Stock', 
+        color: colors.neutral.white,
+        bgColor: colors.status.warning,
+      };
     }
-    return { label: 'IN STOCK', variant: 'success' };
+    return { 
+      label: 'In Stock', 
+      color: colors.neutral.white,
+      bgColor: colors.status.success,
+    };
   }
 
   const categories = Object.values(PRODUCT_CATEGORIES);
@@ -138,13 +169,24 @@ export default function ProductsListScreen() {
       {/* Search and Filter */}
       <View style={styles.header}>
         <View style={styles.searchContainer}>
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search products..."
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            placeholderTextColor={colors.text.muted}
-          />
+          <View style={styles.searchInputWrapper}>
+            <Search size={20} color={colors.text.secondary} />
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Search products..."
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              placeholderTextColor={colors.text.secondary}
+            />
+          </View>
+
+          {/* Scan Button - Temporarily disabled */}
+          {/* <TouchableOpacity
+            style={styles.scanButton}
+            onPress={() => setScannerVisible(true)}
+          >
+            <ScanLine size={24} color={colors.primary.green} />
+          </TouchableOpacity> */}
         </View>
 
         <ScrollView
@@ -160,9 +202,9 @@ export default function ProductsListScreen() {
               !selectedCategory && styles.categoryChipActive,
             ]}
           >
-            <Label style={!selectedCategory && styles.categoryChipTextActive}>
-              ALL
-            </Label>
+            <Text style={[styles.categoryChipText, !selectedCategory && styles.categoryChipTextActive]}>
+              All
+            </Text>
           </TouchableOpacity>
 
           {categories.map((category) => (
@@ -174,16 +216,23 @@ export default function ProductsListScreen() {
                 selectedCategory === category && styles.categoryChipActive,
               ]}
             >
-              <Label
-                style={
-                  selectedCategory === category && styles.categoryChipTextActive
-                }
-              >
-                {category.toUpperCase()}
-              </Label>
+              <Text style={[
+                styles.categoryChipText,
+                selectedCategory === category && styles.categoryChipTextActive
+              ]}>
+                {category.charAt(0).toUpperCase() + category.slice(1)}
+              </Text>
             </TouchableOpacity>
           ))}
         </ScrollView>
+      </View>
+
+      {/* Products Count Header */}
+      <View style={styles.countHeader}>
+        <Package size={16} color={colors.neutral.white} />
+        <Text style={styles.countText}>
+          {filteredProducts.length} Product{filteredProducts.length !== 1 ? 's' : ''}
+        </Text>
       </View>
 
       {/* Products Grid */}
@@ -191,39 +240,61 @@ export default function ProductsListScreen() {
         style={styles.scrollView}
         contentContainerStyle={styles.content}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+          <RefreshControl 
+            refreshing={refreshing} 
+            onRefresh={handleRefresh}
+            tintColor={colors.primary.green}
+          />
         }
       >
         {loading ? (
-          <BodyText style={styles.emptyText}>Loading products...</BodyText>
+          <View style={styles.empty}>
+            <Package size={48} color={colors.border.primary} />
+            <Text style={styles.emptyText}>Loading products...</Text>
+          </View>
         ) : filteredProducts.length === 0 ? (
           <View style={styles.empty}>
-            <BodyText style={styles.emptyText}>
+            <Package size={64} color={colors.border.primary} />
+            <Text style={styles.emptyText}>
               {searchQuery || selectedCategory
                 ? 'No products found'
                 : 'No products yet'}
-            </BodyText>
+            </Text>
+            <Text style={styles.emptySubtext}>
+              {searchQuery || selectedCategory
+                ? 'Try adjusting your search or filters'
+                : 'Add your first product to get started'}
+            </Text>
             {!searchQuery && !selectedCategory && (
-              <Button
-                variant="primary"
-                onPress={() => router.push('/(tabs)/products/add')}
+              <TouchableOpacity
                 style={styles.emptyButton}
+                onPress={() => router.push('/(tabs)/products/add')}
               >
-                ADD YOUR FIRST PRODUCT
-              </Button>
+                <Plus size={20} color={colors.neutral.white} />
+                <Text style={styles.emptyButtonText}>Add Your First Product</Text>
+              </TouchableOpacity>
             )}
           </View>
         ) : (
           <View style={styles.grid}>
-            {filteredProducts.map((product) => {
+            {filteredProducts.map((product, index) => {
               const stockStatus = getStockStatus(product);
+              const fadeAnim = new Animated.Value(0);
+              
+              Animated.timing(fadeAnim, {
+                toValue: 1,
+                duration: 300,
+                delay: index * 30,
+                useNativeDriver: true,
+              }).start();
+
               return (
-                <TouchableOpacity
-                  key={product.id}
-                  onPress={() => router.push(`/(tabs)/products/${product.id}`)}
-                  style={styles.productCard}
-                >
-                  <Card variant="default" style={styles.card}>
+                <Animated.View key={product.id} style={[styles.productCardWrapper, { opacity: fadeAnim }]}>
+                  <TouchableOpacity
+                    onPress={() => router.push(`/(tabs)/products/${product.id}`)}
+                    style={styles.productCard}
+                    activeOpacity={0.7}
+                  >
                     {product.images && product.images.length > 0 ? (
                       <Image
                         source={{ uri: product.images[0] }}
@@ -232,48 +303,82 @@ export default function ProductsListScreen() {
                       />
                     ) : (
                       <View style={styles.placeholderImage}>
-                        <BodyText style={styles.placeholderText}>
-                          No Image
-                        </BodyText>
+                        <Package size={32} color={colors.border.primary} />
+                        <Text style={styles.placeholderText}>No Image</Text>
                       </View>
                     )}
 
                     <View style={styles.productInfo}>
-                      <Heading3 style={styles.productName} numberOfLines={2}>
+                      <Text style={styles.productName} numberOfLines={2}>
                         {product.name}
-                      </Heading3>
+                      </Text>
 
-                      <BodyText style={styles.productPrice}>
+                      <Text style={styles.productPrice}>
                         {formatCurrency(product.price, product.currency)}
-                      </BodyText>
+                      </Text>
 
                       <View style={styles.productMeta}>
-                        <Badge variant={stockStatus.variant} size="small">
-                          {stockStatus.label}
-                        </Badge>
-                        <BodyText style={styles.stockQuantity}>
+                        <View style={[styles.stockBadge, { backgroundColor: stockStatus.bgColor }]}>
+                          <AlertCircle size={10} color={stockStatus.color} />
+                          <Text style={[styles.stockBadgeText, { color: stockStatus.color }]}>
+                            {stockStatus.label}
+                          </Text>
+                        </View>
+                        <Text style={styles.stockQuantity}>
                           {product.stock_quantity} units
-                        </BodyText>
+                        </Text>
                       </View>
+
+                      {product.category && (
+                        <View style={styles.categoryTag}>
+                          <Tag size={10} color={colors.primary.green} />
+                          <Text style={styles.categoryTagText}>
+                            {product.category}
+                          </Text>
+                        </View>
+                      )}
                     </View>
-                  </Card>
-                </TouchableOpacity>
+                  </TouchableOpacity>
+                </Animated.View>
               );
             })}
           </View>
         )}
       </ScrollView>
 
-      {/* Floating Add Button */}
-      <View style={styles.fab}>
-        <Button
-          variant="primary"
-          size="large"
-          onPress={() => router.push('/(tabs)/products/add')}
+      {/* Floating Add Button with Options */}
+      <View style={styles.fabContainer}>
+        <TouchableOpacity
+          style={[styles.fabOption, styles.fabBulk]}
+          onPress={() => router.push('/(tabs)/products/bulk-upload')}
+          activeOpacity={0.8}
         >
-          + ADD PRODUCT
-        </Button>
+          <Text style={styles.fabOptionLabel}>AI Bulk Upload</Text>
+          <View style={styles.fabOptionButton}>
+            <Text style={styles.fabOptionEmoji}>✨</Text>
+            <Text style={styles.fabOptionText}>Up to 50</Text>
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.fabOption, styles.fabManual]}
+          onPress={() => router.push('/(tabs)/products/add')}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.fabOptionLabel}>Manual Entry</Text>
+          <View style={styles.fabOptionButton}>
+            <Plus size={20} color={colors.neutral.white} />
+            <Text style={styles.fabOptionText}>Add One</Text>
+          </View>
+        </TouchableOpacity>
       </View>
+
+      {/* Image Scanner Modal - Temporarily disabled */}
+      {/* <ImageScanner
+        visible={scannerVisible}
+        onClose={() => setScannerVisible(false)}
+        onProductsDetected={handleProductsDetected}
+      /> */}
     </View>
   );
 }
@@ -281,121 +386,274 @@ export default function ProductsListScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.ivory,
+    backgroundColor: colors.primary.cream,
   },
   header: {
-    backgroundColor: colors.white,
-    borderBottomWidth: 2,
-    borderBottomColor: colors.black,
-    paddingBottom: spacing[4],
+    backgroundColor: colors.primary.cream,
+    paddingBottom: spacing.md,
   },
   searchContainer: {
-    padding: spacing[4],
+    padding: spacing.lg,
+    flexDirection: 'row',
+    gap: spacing.sm,
+  },
+  searchInputWrapper: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.neutral.white,
+    borderWidth: 1,
+    borderColor: colors.border.primary,
+    borderRadius: 16,
+    paddingHorizontal: spacing.md,
+    gap: spacing.sm,
+    shadowColor: 'rgba(0, 0, 0, 0.05)',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  scanButton: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: colors.accent.light,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: colors.primary.green,
   },
   searchInput: {
-    backgroundColor: colors.ivory,
-    borderWidth: 2,
-    borderColor: colors.black,
-    borderRadius: borderRadius.base,
-    padding: spacing[4],
-    fontSize: 16,
-    fontFamily: 'Inter',
+    flex: 1,
+    paddingVertical: spacing.sm,
+    fontSize: 15,
+    fontWeight: '500',
     color: colors.text.primary,
   },
   categoryScroll: {
-    paddingHorizontal: spacing[4],
+    paddingHorizontal: spacing.lg,
   },
   categoryContainer: {
     flexDirection: 'row',
-    gap: spacing[2],
-    paddingBottom: spacing[2],
+    gap: spacing.sm,
+    paddingBottom: spacing.sm,
   },
   categoryChip: {
-    paddingVertical: spacing[2],
-    paddingHorizontal: spacing[4],
-    borderRadius: borderRadius.full,
-    borderWidth: 2,
-    borderColor: colors.black,
-    backgroundColor: colors.white,
+    paddingVertical: spacing.xs,
+    paddingHorizontal: spacing.lg,
+    borderRadius: 50,
+    borderWidth: 1,
+    borderColor: colors.border.primary,
+    backgroundColor: colors.neutral.white,
   },
   categoryChipActive: {
-    backgroundColor: colors.safetyOrange,
+    backgroundColor: colors.primary.green,
+    borderColor: colors.primary.green,
+  },
+  categoryChipText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: colors.text.primary,
   },
   categoryChipTextActive: {
-    color: colors.white,
+    color: colors.neutral.white,
+  },
+  countHeader: {
+    backgroundColor: colors.primary.green,
+    padding: spacing.sm,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.xs,
+  },
+  countText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: colors.neutral.white,
   },
   scrollView: {
     flex: 1,
   },
   content: {
-    padding: spacing[4],
+    padding: spacing.lg,
+    paddingBottom: spacing['2xl'] * 2,
   },
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: spacing[4],
+    gap: spacing.md,
   },
-  productCard: {
+  productCardWrapper: {
     width: '48%',
   },
-  card: {
-    padding: 0,
+  productCard: {
+    backgroundColor: colors.neutral.white,
+    borderWidth: 1,
+    borderColor: colors.border.primary,
+    borderRadius: 16,
     overflow: 'hidden',
+    shadowColor: 'rgba(0, 0, 0, 0.08)',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 1,
+    shadowRadius: 12,
+    elevation: 3,
   },
   productImage: {
     width: '100%',
-    height: 150,
-    backgroundColor: colors.gray[200],
+    height: 140,
+    backgroundColor: colors.primary.beige,
   },
   placeholderImage: {
     width: '100%',
-    height: 150,
-    backgroundColor: colors.gray[200],
+    height: 140,
+    backgroundColor: colors.primary.beige,
     justifyContent: 'center',
     alignItems: 'center',
+    gap: spacing.xs,
   },
   placeholderText: {
-    color: colors.text.muted,
+    color: colors.text.secondary,
     fontSize: 12,
+    fontWeight: '500',
   },
   productInfo: {
-    padding: spacing[4],
-    gap: spacing[2],
+    padding: spacing.md,
+    gap: spacing.xs,
   },
   productName: {
-    fontSize: 16,
+    fontSize: 15,
     lineHeight: 20,
+    fontWeight: '600',
+    color: colors.text.primary,
   },
   productPrice: {
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: '700',
-    color: colors.safetyOrange,
+    color: colors.primary.green,
   },
   productMeta: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginTop: spacing.xs,
+  },
+  stockBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: spacing.xs,
+    paddingVertical: 4,
+    borderRadius: 50,
+  },
+  stockBadgeText: {
+    fontSize: 10,
+    fontWeight: '600',
   },
   stockQuantity: {
-    fontSize: 12,
-    color: colors.text.muted,
+    fontSize: 11,
+    color: colors.text.secondary,
+    fontWeight: '500',
+  },
+  categoryTag: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: spacing.xs,
+    paddingVertical: 4,
+    backgroundColor: colors.accent.light,
+    borderRadius: 50,
+    alignSelf: 'flex-start',
+  },
+  categoryTagText: {
+    fontSize: 10,
+    fontWeight: '600',
+    color: colors.primary.green,
   },
   empty: {
-    paddingVertical: spacing[12],
+    paddingVertical: spacing['2xl'] * 2,
     alignItems: 'center',
+    gap: spacing.md,
   },
   emptyText: {
     textAlign: 'center',
-    color: colors.text.muted,
-    marginBottom: spacing[4],
+    color: colors.text.primary,
+    fontSize: 18,
+    fontWeight: '700',
+  },
+  emptySubtext: {
+    textAlign: 'center',
+    color: colors.text.secondary,
+    fontSize: 14,
+    fontWeight: '500',
+    lineHeight: 20,
   },
   emptyButton: {
-    marginTop: spacing[4],
+    marginTop: spacing.lg,
+    backgroundColor: colors.primary.green,
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.md,
+    borderRadius: 50,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    shadowColor: 'rgba(46, 204, 113, 0.3)',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 1,
+    shadowRadius: 12,
+    elevation: 4,
   },
-  fab: {
+  emptyButtonText: {
+    color: colors.neutral.white,
+    fontSize: 15,
+    fontWeight: '700',
+  },
+  fabContainer: {
     position: 'absolute',
-    bottom: spacing[6],
-    left: spacing[6],
-    right: spacing[6],
+    bottom: spacing.xl,
+    right: spacing.xl,
+    gap: spacing.sm,
+    alignItems: 'flex-end',
+  },
+  fabOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    shadowColor: 'rgba(0, 0, 0, 0.2)',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 1,
+    shadowRadius: 12,
+    elevation: 6,
+  },
+  fabBulk: {
+    marginBottom: spacing.xs,
+  },
+  fabManual: {},
+  fabOptionLabel: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: colors.text.primary,
+    backgroundColor: colors.neutral.white,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 4,
+    borderRadius: 50,
+    borderWidth: 1,
+    borderColor: colors.border.primary,
+  },
+  fabOptionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    backgroundColor: colors.primary.green,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    borderRadius: 50,
+  },
+  fabOptionEmoji: {
+    fontSize: 20,
+  },
+  fabOptionText: {
+    color: colors.neutral.white,
+    fontSize: 15,
+    fontWeight: '700',
   },
 });
